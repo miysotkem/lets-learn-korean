@@ -1,126 +1,100 @@
-// 1. TỪ VỰNG THEO CỤM (Chèn đường dẫn ảnh tự vẽ/ghép vào mục image)
-const VOCAB_CHUNKS = [
+// 1. DANH SÁCH TỪ VỰNG & TRANH MINH HỌA (nằm trong thư mục images/)
+const vocabData = [
   {
-    topic: "Đời sống & Quán cà phê",
-    image: "images/uong-ca-phe.png",
-    chunk: "아이스 아메리카노를 마시다",
-    roman: "Aiseu amerikano-reul masida",
-    meaning: "Uống Americano đá",
-    note: "아이스 (đá) + 아메리카노 (Americano) + 를 (tiểu từ tân ngữ) + 마시다 (uống)"
+    korean: "커피를 마시다",
+    roman: "keo-pi-reul ma-si-da",
+    meaning: "Uống cà phê",
+    exampleKr: "아침마다 카페에서 커피를 마셔요.",
+    exampleVi: "Mỗi sáng tôi đều uống cà phê ở quán.",
+    image: "images/uong-ca-phe.png" // Đổi thành tên ảnh bạn đã up lên thư mục images/
   },
   {
-    topic: "Đời sống & Quán cà phê",
-    image: "images/dat-cho-ngoi.png",
-    chunk: "창가 자리에 앉다",
-    roman: "Changga jarie anda",
-    meaning: "Ngồi ở chỗ cạnh cửa sổ",
-    note: "창가 (cạnh cửa sổ) + 자리 (chỗ ngồi) + 에 (ở/tại) + 앉다 (ngồi)"
+    korean: "자리를 예약하다",
+    roman: "ja-ri-reul ye-yak-ha-da",
+    meaning: "Đặt chỗ ngồi",
+    exampleKr: "창가 자리를 미리 예약했어요.",
+    exampleVi: "Tôi đã đặt trước chỗ ngồi cạnh cửa sổ.",
+    image: "images/dat-cho-ngoi.png"
   },
   {
-    topic: "Cảm xúc & Học tập",
-    image: "images/on-thi.png",
-    chunk: "시험을 준비하다",
-    roman: "Siheomeul junbihada",
-    meaning: "Chuẩn bị cho kỳ thi",
-    note: "시험 (kỳ thi) + 을 (tiểu từ) + 준비하다 (chuẩn bị)"
+    korean: "시험을 준비하다",
+    roman: "si-heom-eul jun-bi-ha-da",
+    meaning: "Ôn thi / Chuẩn bị cho kỳ thi",
+    exampleKr: "다음 주 토픽 시험을 열심히 준비해요.",
+    exampleVi: "Tôi chăm chỉ ôn thi TOPIK tuần tới.",
+    image: "images/on-thi.png"
   }
 ];
 
-// 2. NGỮ PHÁP & BÀI TẬP CHIA ĐUÔI CÂU
-const GRAMMAR_LIST = [
+// 2. DANH SÁCH NGỮ PHÁP
+const grammarData = [
   {
-    title: "-아/어서 (Vì... nên / Rồi thì...)",
-    meaning: "Diễn tả nguyên nhân - kết quả hoặc hành động xảy ra nối tiếp.",
-    usage: "Gốc động/tính từ có nguyên âm ㅏ, ㅗ + 아서 | Các nguyên âm khác + 어서 | 하다 -> 해서. (Không chia thì quá khứ trước -아/어서).",
-    examples: [
-      { kr: "비가 와서 집에 있었어요.", vi: "Vì trời mưa nên tôi đã ở nhà." },
-      { kr: "도서관에 가서 공부해요.", vi: "Tôi đến thư viện rồi học bài." }
-    ],
-    practice: {
-      question: "Chia động từ trong ngoặc: 배가 ___ (고프다) 밥을 먹었어요.",
-      hint: "고프다 bất quy tắc ㅡ -> 고파 + 아서",
-      answer: "고파서"
-    }
+    pattern: "Động từ + 아/어서",
+    meaning: "Vì... nên... (Chỉ nguyên nhân - kết quả tự nhiên)",
+    exampleKr: "비가 와서 집에 있었어요.",
+    exampleVi: "Vì trời mưa nên tôi đã ở nhà."
   },
   {
-    title: "-(으)ㄹ 수 있다/없다 (Có thể / Không thể)",
-    meaning: "Diễn tả khả năng hoặc sự cho phép làm một việc gì đó.",
-    usage: "Gốc có patchim + 을 수 있다 | Không patchim hoặc patchim ㄹ + ㄹ 수 있다.",
-    examples: [
-      { kr: "한국어를 읽을 수 있어요.", vi: "Tôi có thể đọc được tiếng Hàn." },
-      { kr: "매운 음식을 먹을 수 없어요.", vi: "Tôi không thể ăn đồ cay." }
-    ],
-    practice: {
-      question: "Chia động từ trong ngoặc: 내일 일찍 ___ (오다) 있어요.",
-      hint: "오다 không có patchim -> 오 + ㄹ 수",
-      answer: "올 수"
-    }
+    pattern: "Động từ + (으)려고 하다",
+    meaning: "Định làm gì đó (Diễn tả ý định)",
+    exampleKr: "한국어를 배우려고 해요.",
+    exampleVi: "Tôi đang định học tiếng Hàn."
   }
 ];
 
-// 3. DỮ LIỆU 4 KỸ NĂNG (NGHE - NÓI - ĐỌC - VIẾT)
-const SKILLS_DATA = {
-  listening: [
-    { text: "오늘 날씨가 좋아서 공원에 갔어요.", hint: "Hôm nay thời tiết đẹp nên tôi đã đi công viên." },
-    { text: "내일 친구하고 같이 영화를 볼 거예요.", hint: "Ngày mai tôi sẽ xem phim cùng với bạn." }
-  ],
-  speaking: [
-    { kr: "한국어를 열심히 공부하고 있어요.", vi: "Tôi đang học tiếng Hàn chăm chỉ." },
-    { kr: "저는 그림 그리는 것을 좋아해요.", vi: "Tôi thích việc vẽ tranh." }
-  ],
-  reading: {
-    title: "주말 일상 (Cuộc sống cuối tuần)",
-    passage: "저는 보통 주말에 집에서 쉬지만 이번 토요일에는 친구를 만났어요. 우리는 홍대 근처 카페에서 이야기를 나누고 같이 사진을 찍었어요. 정말 즐거운 하루였어요.",
-    translation: "Thường thì cuối tuần tôi nghỉ ngơi ở nhà nhưng thứ Bảy tuần này tôi đã gặp bạn. Chúng tôi trò chuyện ở quán cà phê gần Hongdae và chụp ảnh cùng nhau. Đó thực sự là một ngày vui vẻ.",
-    question: "이 사람은 이번 토요일에 무엇을 했습니까? (Người này đã làm gì vào thứ Bảy tuần này?)",
+// 3. LUYỆN 4 KỸ NĂNG (NGHE - NÓI - ĐỌC - VIẾT)
+const skillsData = {
+  listening: {
+    title: "Luyện Nghe: Nghe câu và chọn nghĩa đúng",
+    audioText: "오늘 날씨가 정말 좋아서 공원에 가고 싶어요.",
     options: [
-      "집에서 혼자 잤어요. (Ngủ một mình ở nhà)",
-      "친구하고 카페에 갔어요. (Đi quán cà phê với bạn)",
-      "홍대에서 영화를 봤어요. (Xem phim ở Hongdae)",
-      "집에서 요리를 했어요. (Nấu ăn ở nhà)"
+      "Hôm nay thời tiết rất đẹp nên tôi muốn đi công viên.",
+      "Hôm nay trời mưa nên tôi ở nhà ngủ.",
+      "Ngày mai tôi có hẹn ăn tối với bạn."
     ],
-    answerIndex: 1
+    answerIndex: 0
+  },
+  speaking: {
+    title: "Luyện Nói: Nghe mẫu và đọc to theo từng câu",
+    sentences: [
+      { kr: "안녕하세요, 만나서 반갑습니다!", vi: "Xin chào, rất vui được gặp bạn!" },
+      { kr: "이거 얼마예요? 좀 깎아 주세요.", vi: "Cái này bao nhiêu tiền? Giảm giá chút cho tôi nhé." }
+    ]
+  },
+  reading: {
+    title: "Luyện Đọc: Đọc đoạn nhật ký ngắn",
+    passage: "저는 주말마다 도서관에 갑니다. 도서관에서 한국어 단어를 외우고 그림도 그립니다. 공부가 끝나면 친구와 맛있는 떡볶이를 먹습니다.",
+    question: "Người viết làm gì ở thư viện vào cuối tuần?",
+    options: [
+      "Học thuộc từ vựng tiếng Hàn và vẽ tranh",
+      "Ngủ trưa và nghe nhạc",
+      "Nấu món Tteokbokki"
+    ],
+    answerIndex: 0
   },
   writing: {
-    prompt: "Đề bài (Dạng TOPIK II Câu 53 / Viết nhật ký): Hãy viết một đoạn văn (khoảng 100 - 200 ký tự) kể về lý do bạn học tiếng Hàn và mục tiêu sắp tới của bạn.",
-    sampleAnswer: "저는 한국 문화와 드라마에 관심이 많아서 한국어를 배우기 시작했습니다. 처음에는 문법이 조금 어려웠지만 매일 단어를 외우고 그림을 그리면서 재미있게 공부하고 있습니다. 올해 안에 토픽 3급에 합격하는 것이 저의 목표입니다."
+    title: "Luyện Viết: Tập đặt câu theo gợi ý",
+    prompt: "Hãy viết 1–2 câu tiếng Hàn giới thiệu món ăn hoặc đồ uống bạn thích nhất:",
+    sample: "저는 아이스 아메리카노를 제일 좋아해요. 매일 마셔요."
   }
 };
 
-// 4. ĐỀ ÔN THI TOPIK
-const TOPIK_QUESTIONS = [
+// 4. CÂU HỎI ÔN THI TOPIK
+const topikData = [
   {
-    level: "TOPIK I - Ngữ pháp & Từ vựng",
-    passage: "",
-    question: "Chọn từ đúng điền vào chỗ trống: 어제 밤에 늦게 자서 오늘 아침에 아주 (   ).",
-    options: ["피곤해요", "깨끗해요", "조용해요", "가벼워요"],
-    answer: 0,
-    explanation: "Tối qua ngủ muộn nên sáng nay rất mệt mỏi (피곤하다)."
+    question: "[TOPIK Đọc] Chọn từ đúng điền vào chỗ trống:\n저는 아침에 빵을 먹습니다. 그리고 우유를 (        ).",
+    options: ["마십니다", "입습니다", "읽습니다", "씁니다"],
+    answerIndex: 0,
+    explain: "우유 (sữa) đi với động từ 마시다 (uống) -> 마십니다."
   },
   {
-    level: "TOPIK I - Đọc hiểu",
-    passage: "내일은 어머니 생신입니다. 그래서 오늘 백화점에 가서 어머니께 드릴 선물을 샀습니다.",
-    question: "Tại sao hôm nay người viết lại đi trung tâm thương mại?",
+    question: "[TOPIK Đọc] Chọn nội dung đúng với câu sau:\n우리 집 근처에는 큰 공원이 있습니다.",
     options: [
-      "Để mua quần áo của mình",
-      "Để mua quà sinh nhật tặng mẹ",
-      "Để gặp bạn bè ăn tối",
-      "Để đi làm thêm"
+      "Gần nhà tôi có một công viên lớn.",
+      "Trong công viên có nhà của tôi.",
+      "Nhà tôi rất xa công viên."
     ],
-    answer: 1,
-    explanation: "Câu đầu nhắc '내일은 어머니 생신입니다' (Ngày mai là sinh nhật mẹ) nên đi mua quà tặng mẹ."
-  },
-  {
-    level: "TOPIK II - Đọc hiểu trung cấp",
-    passage: "운동을 꾸준히 하면 건강에 좋을 뿐만 아니라 스트레스도 풀 수 있다. 하루에 30분씩 걷는 것만으로도 큰 효과를 볼 수 있다.",
-    question: "Nội dung nào đúng với đoạn văn trên?",
-    options: [
-      "Chỉ vận động mạnh mới giảm được căng thẳng.",
-      "Mỗi ngày đi bộ 30 phút cũng mang lại hiệu quả tốt.",
-      "Tập thể dục khiến cơ thể dễ mệt mỏi hơn.",
-      "Không cần tập thể dục thường xuyên."
-    ],
-    answer: 1,
-    explanation: "'하루에 30분씩 걷는 것만으로도 큰 효과를 볼 수 있다' = Chỉ cần đi bộ 30 phút mỗi ngày cũng thấy hiệu quả lớn."
+    answerIndex: 0,
+    explain: "근처 (gần/lân cận), 큰 공원 (công viên lớn)."
   }
 ];
