@@ -1,407 +1,400 @@
+:root {
+  --paper-bg: #fbf6ec;
+  --ink: #382c25;
+  --ink-soft: #6e5d52;
+  --accent: #d96b43;
+  --correct: #4c8c5a;
+  --wrong: #c84b4b;
+  --sketch-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f6f4ef;
-  color: #2b2927;
-  padding: 20px 14px 50px;
-  line-height: 1.5;
+  font-family: 'Patrick Hand', cursive, sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  /* Tự dùng bg-main.png nếu bạn đã up, nếu chưa thì dùng nền giấy chấm bi kem */
+  background-color: var(--paper-bg);
+  background-image:
+    url('images/bg-main.png'),
+    radial-gradient(#d5c8b4 1.2px, transparent 1.2px);
+  background-size: cover, 22px 22px;
+  background-position: center top, 0 0;
+  background-attachment: fixed;
 }
 
-.container {
-  max-width: 620px;
+.app-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 14px 14px 40px;
+}
+
+/* --- NÚT VẼ TAY CHUNG --- */
+.art-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.14s ease;
+  position: relative;
+}
+
+.art-btn:active {
+  transform: scale(0.92) rotate(-1.5deg);
+}
+
+/* Khi đã có tranh tự vẽ (.has-art) -> Ẩn chữ/viền mặc định, chỉ hiện tranh */
+.art-btn.has-art .fallback-label,
+.banner-box.has-art .fallback-banner {
+  display: none;
+}
+
+.art-btn.has-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* --- BANNER TIÊU ĐỀ --- */
+.site-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.banner-box img {
+  max-width: 100%;
+  max-height: 95px;
+  object-fit: contain;
   margin: 0 auto;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 20px;
+.fallback-banner {
+  display: inline-block;
+  font-size: 1.75rem;
+  padding: 6px 22px;
+  border: 2.5px dashed var(--ink);
+  border-radius: var(--sketch-radius);
+  background: rgba(255, 255, 255, 0.7);
 }
 
-header h1 {
-  font-size: 1.5rem;
-  margin-bottom: 14px;
-}
-
-.main-nav {
+/* --- 4 TAB CHUYỂN CHẾ ĐỘ --- */
+.nav-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  background: #e6e1d6;
-  padding: 5px;
-  border-radius: 14px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.nav-btn {
-  border: none;
-  background: transparent;
-  padding: 9px 6px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.88rem;
-  cursor: pointer;
-  color: #57524a;
+.tab-btn {
+  height: 54px;
+  padding: 2px;
 }
 
-.nav-btn.active {
-  background: #ffffff;
-  color: #1f4e78;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+.tab-btn:not(.has-art) {
+  border: 2px dashed var(--ink-soft);
+  border-radius: var(--sketch-radius);
+  background: rgba(255, 255, 255, 0.65);
+  font-size: 1.05rem;
+  font-weight: bold;
 }
 
-.toolbar {
+.tab-btn:not(.has-art).active {
+  border-style: solid;
+  border-color: var(--accent);
+  background: #fff3e6;
+  transform: translateY(-2px);
+}
+
+.tab-btn.has-art.active {
+  transform: translateY(-4px) scale(1.05);
+  filter: drop-shadow(0 4px 4px rgba(56, 44, 37, 0.25));
+}
+
+/* --- NÚT PHỤ DẠNG PHÁC THẢO --- */
+.sub-switch {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
   margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
-select, input[type="text"], textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid #d6cfc2;
-  border-radius: 10px;
+.sketch-pill {
+  font-family: inherit;
   font-size: 1rem;
-  background: #ffffff;
-}
-
-.toolbar select {
-  width: auto;
-  flex: 1;
-}
-
-.sub-switch {
-  display: flex;
-  background: #e6e1d6;
-  padding: 4px;
-  border-radius: 10px;
-  gap: 4px;
-}
-
-.sub-switch.full-width {
-  margin-bottom: 14px;
-}
-
-.sub-switch button {
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px dashed var(--ink-soft);
+  border-radius: var(--sketch-radius);
+  color: var(--ink);
   cursor: pointer;
 }
 
-.sub-switch button.active {
-  background: #ffffff;
-  color: #1f4e78;
+.sketch-pill.active {
+  border-style: solid;
+  border-color: var(--ink);
+  background: #ffe9d2;
+  font-weight: bold;
 }
 
-.card-panel {
-  background: #ffffff;
-  border: 1.5px solid #e3ddd0;
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+.small-btn {
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
 
-/* Flashcard 3D */
-.counter {
+.hidden {
+  display: none !important;
+}
+
+/* --- FLASHCARD 3D & KHUNG VẼ TAY --- */
+.card-counter {
   text-align: center;
-  font-weight: 600;
-  color: #787166;
-  margin-bottom: 8px;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.flashcard-stage {
+  perspective: 1000px;
+  width: 100%;
+  height: 360px;
+  margin-bottom: 16px;
 }
 
 .flashcard {
-  height: 380px;
-  perspective: 1000px;
-  cursor: pointer;
-}
-
-.card-inner {
   width: 100%;
   height: 100%;
   position: relative;
-  transition: transform 0.5s;
   transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
 }
 
-.flashcard.flipped .card-inner {
+.flashcard.is-flipped {
   transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
+.card-face {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  background: #ffffff;
-  border: 2px solid #e3ddd0;
-  border-radius: 18px;
-  padding: 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  padding: 28px 24px;
+}
+
+/* Khung phác thảo khi chưa up card-front.png / card-back.png */
+.card-face:not(.has-frame) {
+  background: rgba(255, 253, 249, 0.92);
+  border: 3px dashed var(--ink);
+  border-radius: var(--sketch-radius);
+  box-shadow: 4px 5px 0 rgba(56, 44, 37, 0.12);
 }
 
 .card-back {
   transform: rotateY(180deg);
 }
 
-.art-box {
+/* Ảnh khung thẻ tự vẽ (card-front.png / card-back.png) */
+.frame-art {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 260px;
-  border: 2px dashed #d4ccb8;
-  border-radius: 12px;
-  background: #fcfbf8;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.card-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  width: 100%;
+}
+
+/* Tranh minh họa từ vựng bên trong thẻ */
+.vocab-img-wrap {
+  width: 155px;
+  height: 155px;
+  margin: 0 auto 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
 }
 
-.art-box.small-art {
-  height: 200px;
-  margin-bottom: 12px;
-}
-
-.art-box img {
+.vocab-img-wrap img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
 
-.img-fallback {
-  color: #8c8376;
+.vocab-img-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed #b9a996;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.9rem;
+  color: var(--ink-soft);
+  padding: 8px;
 }
 
-.hint {
-  margin-top: 12px;
-  font-size: 0.85rem;
-  color: #8c8376;
-}
-
-#card-chunk {
-  font-size: 1.8rem;
-  margin: 10px 0 4px;
-}
-
-.roman {
-  color: #787166;
-  margin-bottom: 8px;
-}
-
-.meaning {
-  font-size: 1.2rem;
+.korean-word {
+  font-family: 'Gaegu', cursive;
+  font-size: 2.2rem;
   font-weight: 700;
-  color: #1f4e78;
+  line-height: 1.2;
+}
+
+.roman-hint {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.meaning-word {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--accent);
   margin-bottom: 14px;
 }
 
-.note-box {
-  background: #f5f2eb;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 0.92rem;
-  width: 100%;
-}
-
-/* Buttons & Controls */
-.controls, .btn-group, .input-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.controls button, .btn-secondary {
-  flex: 1;
-  padding: 10px 14px;
-  border: 1.5px solid #d6cfc2;
-  background: #ffffff;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-primary {
-  padding: 10px 18px;
-  background: #1f4e78;
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-audio {
-  background: #fff3d6;
-  border: 1.5px solid #ecc463;
-  color: #6b4e06;
-  padding: 7px 14px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Quiz & Options */
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.options-grid.single-col {
-  grid-template-columns: 1fr;
-}
-
-.options-grid button {
-  padding: 12px;
-  border: 1.5px solid #d6cfc2;
-  background: #fcfbf8;
-  border-radius: 10px;
-  font-size: 0.98rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-}
-
-.options-grid button.correct {
-  background: #d4edda;
-  border-color: #28a745;
-  color: #155724;
-}
-
-.options-grid button.wrong {
-  background: #f8d7da;
-  border-color: #dc3545;
-  color: #721c24;
-}
-
-/* Grammar & Skills */
-.gram-title {
-  color: #1f4e78;
-  font-size: 1.5rem;
-  margin-bottom: 6px;
-}
-
-.examples-list {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.example-item {
-  background: #f7f5f0;
+.example-box {
+  background: rgba(255, 255, 255, 0.65);
   padding: 10px 12px;
-  border-radius: 10px;
-  border-left: 4px solid #1f4e78;
+  border-radius: 14px;
+  border: 1.5px dashed #c4b5a2;
 }
 
-.divider {
+.example-kr {
+  font-family: 'Gaegu', cursive;
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.example-vi {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+}
+
+/* --- 4 NÚT ĐIỀU KHIỂN THẺ --- */
+.card-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ctrl-btn {
+  width: 58px;
+  height: 58px;
+}
+
+.ctrl-btn.wide-btn {
+  width: 105px;
+}
+
+.ctrl-btn:not(.has-art) {
+  border: 2.5px dashed var(--ink);
+  border-radius: var(--sketch-radius);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* --- KHUNG DÙNG CHUNG CHO QUIZ / NGỮ PHÁP / KỸ NĂNG / TOPIK (box-quiz.png) --- */
+.sketch-box {
+  position: relative;
+  padding: 20px 22px;
+  margin-bottom: 12px;
+  width: 100%;
+  text-align: left;
+  background: none;
   border: none;
-  border-top: 1.5px dashed #e0d9cc;
-  margin: 18px 0;
+  font-family: inherit;
+  color: var(--ink);
 }
 
-.prac-question {
-  font-weight: 600;
-  margin: 10px 0;
-  font-size: 1.05rem;
+.sketch-box:not(.has-frame) {
+  background: rgba(255, 253, 249, 0.9);
+  border: 2.5px dashed var(--ink);
+  border-radius: var(--sketch-radius);
 }
 
-.hint-text {
-  color: #787166;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
+.sketch-box-inner {
+  position: relative;
+  z-index: 1;
 }
 
-.feedback {
-  margin-top: 12px;
-  font-weight: 600;
-}
-
-.passage-box {
-  background: #f9f8f4;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #e3ddd0;
-  margin: 12px 0;
-  font-size: 1.05rem;
-}
-
-.trans-box {
-  background: #eef4fa;
-  padding: 12px;
-  border-radius: 10px;
-  margin-top: 10px;
-  font-size: 0.95rem;
-}
-
-.audio-controls {
-  display: flex;
-  gap: 10px;
-  margin: 12px 0;
-}
-
-.sample-box {
-  background: #f7f5f0;
-  padding: 16px;
-  border-radius: 12px;
+.quiz-prompt-box {
   text-align: center;
-  margin: 12px 0;
+  margin-bottom: 14px;
 }
 
-.kr-large {
-  font-size: 1.35rem;
+.quiz-option-btn {
+  cursor: pointer;
+  display: block;
+  font-size: 1.15rem;
+  transition: transform 0.12s ease;
+}
+
+.quiz-option-btn:active {
+  transform: scale(0.97);
+}
+
+.quiz-option-btn.is-correct {
+  filter: drop-shadow(0 0 6px rgba(76, 140, 90, 0.6));
+  color: var(--correct);
+  font-weight: bold;
+}
+
+.quiz-option-btn.is-wrong {
+  filter: drop-shadow(0 0 6px rgba(200, 75, 75, 0.6));
+  color: var(--wrong);
+}
+
+.quiz-feedback {
+  text-align: center;
+  font-size: 1.15rem;
+  min-height: 28px;
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+.kr-title {
+  font-family: 'Gaegu', cursive;
+  font-size: 1.65rem;
   font-weight: 700;
-  margin-bottom: 6px;
+  color: var(--accent);
 }
 
-.write-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.write-area {
+  width: 100%;
+  min-height: 85px;
   margin-top: 10px;
-}
-
-/* TOPIK */
-.topik-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
-.timer-badge {
-  background: #ffe8e8;
-  color: #b81d1d;
-  padding: 4px 10px;
-  border-radius: 8px;
-}
-
-.tag {
-  display: inline-block;
-  background: #e3edf7;
-  color: #1f4e78;
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.hidden {
-  display: none !important;
+  padding: 10px;
+  font-family: 'Gaegu', cursive;
+  font-size: 1.35rem;
+  border: 2px dashed var(--ink-soft);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
 }
