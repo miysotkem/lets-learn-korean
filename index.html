@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Góc Học Tiếng Hàn & Ôn TOPIK</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🇰🇷 Sổ Tay Tiếng Hàn & TOPIK</h1>
+      <nav class="main-nav">
+        <button class="nav-btn active" data-tab="vocab">📚 Từ vựng cụm</button>
+        <button class="nav-btn" data-tab="grammar">🧩 Ngữ pháp</button>
+        <button class="nav-btn" data-tab="skills">🎧 4 Kỹ năng</button>
+        <button class="nav-btn" data-tab="topik">🎯 Ôn TOPIK</button>
+      </nav>
+    </header>
+
+    <!-- ================= TAB 1: TỪ VỰNG THEO CỤM ================= -->
+    <section id="tab-vocab" class="tab-content active">
+      <div class="toolbar">
+        <select id="topic-select"></select>
+        <div class="sub-switch">
+          <button id="btn-vocab-card" class="active">Flashcard</button>
+          <button id="btn-vocab-quiz">Kiểm tra</button>
+        </div>
+      </div>
+
+      <!-- Flashcard -->
+      <div id="vocab-card-view">
+        <p class="counter" id="vocab-counter">1 / 1</p>
+        <div class="flashcard" id="flashcard">
+          <div class="card-inner">
+            <div class="card-front">
+              <div class="art-box">
+                <img id="card-img" src="" alt="Minh họa" />
+                <div id="card-img-fallback" class="img-fallback hidden"></div>
+              </div>
+              <p class="hint">👆 Bấm vào thẻ để xem cụm từ</p>
+            </div>
+            <div class="card-back">
+              <button class="btn-audio" id="btn-speak-chunk">🔊 Nghe cụm từ</button>
+              <h2 id="card-chunk"></h2>
+              <p class="roman" id="card-roman"></p>
+              <p class="meaning" id="card-meaning"></p>
+              <div class="note-box" id="card-note"></div>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="btn-prev-card">← Trước</button>
+          <button id="btn-shuffle-card">🔀 Trộn</button>
+          <button id="btn-next-card">Tiếp →</button>
+        </div>
+      </div>
+
+      <!-- Kiểm tra từ vựng -->
+      <div id="vocab-quiz-view" class="hidden card-panel">
+        <div class="art-box small-art">
+          <img id="quiz-img" src="" alt="Câu hỏi" />
+          <div id="quiz-img-fallback" class="img-fallback hidden"></div>
+        </div>
+        <p class="quiz-prompt">Chọn cụm từ tiếng Hàn đúng với hình minh họa:</p>
+        <div id="vocab-quiz-options" class="options-grid"></div>
+        <p id="vocab-quiz-feedback" class="feedback"></p>
+        <button id="btn-next-vocab-quiz" class="btn-primary hidden">Câu tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: NGỮ PHÁP ================= -->
+    <section id="tab-grammar" class="tab-content hidden">
+      <div class="toolbar">
+        <select id="grammar-select"></select>
+      </div>
+      <div class="card-panel">
+        <h2 id="gram-title" class="gram-title"></h2>
+        <p class="gram-meaning"><strong>Nghĩa:</strong> <span id="gram-meaning"></span></p>
+        <p class="gram-usage" id="gram-usage"></p>
+
+        <div class="examples-list" id="gram-examples"></div>
+
+        <hr class="divider" />
+        <h3>✍️ Thực hành chia đuôi câu</h3>
+        <p id="gram-prac-q" class="prac-question"></p>
+        <p id="gram-prac-hint" class="hint-text"></p>
+        <div class="input-row">
+          <input type="text" id="gram-prac-input" placeholder="Gõ đáp án tiếng Hàn..." />
+          <button id="btn-check-gram" class="btn-primary">Kiểm tra</button>
+        </div>
+        <p id="gram-prac-feedback" class="feedback"></p>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: 4 KỸ NĂNG ================= -->
+    <section id="tab-skills" class="tab-content hidden">
+      <div class="sub-switch full-width">
+        <button class="skill-btn active" data-skill="listening">👂 Nghe</button>
+        <button class="skill-btn" data-skill="speaking">🗣️ Nói</button>
+        <button class="skill-btn" data-skill="reading">📖 Đọc</button>
+        <button class="skill-btn" data-skill="writing">✍️ Viết</button>
+      </div>
+
+      <!-- NGHE (Chép chính tả) -->
+      <div id="skill-listening" class="skill-panel card-panel">
+        <h3>Nghe và chép lại câu tiếng Hàn</h3>
+        <div class="audio-controls">
+          <button id="btn-listen-normal" class="btn-audio">🔊 Nghe tốc độ chuẩn</button>
+          <button id="btn-listen-slow" class="btn-audio">🐢 Nghe chậm</button>
+        </div>
+        <input type="text" id="listen-input" placeholder="Gõ lại câu bạn vừa nghe được..." />
+        <div class="btn-group">
+          <button id="btn-check-listen" class="btn-primary">Kiểm tra</button>
+          <button id="btn-next-listen" class="btn-secondary">Câu khác →</button>
+        </div>
+        <p id="listen-feedback" class="feedback"></p>
+      </div>
+
+      <!-- NÓI (Luyện phát âm qua Mic) -->
+      <div id="skill-speaking" class="skill-panel card-panel hidden">
+        <h3>Đọc to câu mẫu dưới đây</h3>
+        <div class="sample-box">
+          <p id="speak-target-kr" class="kr-large"></p>
+          <p id="speak-target-vi" class="hint-text"></p>
+          <button id="btn-listen-sample" class="btn-audio">🔊 Nghe mẫu</button>
+        </div>
+        <button id="btn-start-mic" class="btn-primary">🎙️ Bấm để nói</button>
+        <p id="speak-status" class="hint-text"></p>
+        <p id="speak-result" class="feedback"></p>
+        <button id="btn-next-speak" class="btn-secondary">Câu khác →</button>
+      </div>
+
+      <!-- ĐỌC (Đoạn văn + Câu hỏi) -->
+      <div id="skill-reading" class="skill-panel card-panel hidden">
+        <h3 id="read-title"></h3>
+        <p id="read-passage" class="passage-box"></p>
+        <button id="btn-toggle-trans" class="btn-secondary">👁️ Hiện/Ẩn bản dịch tiếng Việt</button>
+        <p id="read-trans" class="trans-box hidden"></p>
+        <hr class="divider" />
+        <p id="read-question" class="prac-question"></p>
+        <div id="read-options" class="options-grid"></div>
+        <p id="read-feedback" class="feedback"></p>
+      </div>
+
+      <!-- VIẾT (Luyện viết & Đếm ký tự) -->
+      <div id="skill-writing" class="skill-panel card-panel hidden">
+        <h3>Luyện viết đoạn văn ngắn</h3>
+        <p id="write-prompt" class="prac-question"></p>
+        <textarea id="write-area" rows="6" placeholder="Viết bài của bạn tại đây (tự động lưu nháp)..."></textarea>
+        <div class="write-meta">
+          <span id="char-count">Số ký tự: 0</span>
+          <button id="btn-toggle-sample-write" class="btn-secondary">Xem bài mẫu</button>
+        </div>
+        <div id="write-sample-box" class="trans-box hidden"></div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: ÔN THI TOPIK ================= -->
+    <section id="tab-topik" class="tab-content hidden">
+      <div class="card-panel">
+        <div class="topik-header">
+          <span id="topik-progress">Câu 1 / 1</span>
+          <span id="topik-timer" class="timer-badge">⏱️ 10:00</span>
+        </div>
+        <span id="topik-tag" class="tag"></span>
+        <div id="topik-passage" class="passage-box hidden"></div>
+        <p id="topik-question" class="prac-question"></p>
+        <div id="topik-options" class="options-grid single-col"></div>
+        <div id="topik-explanation" class="trans-box hidden"></div>
+        <div class="controls">
+          <button id="btn-topik-prev">← Câu trước</button>
+          <button id="btn-topik-reset">🔄 Làm lại đề</button>
+          <button id="btn-topik-next">Câu sau →</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
