@@ -1,382 +1,270 @@
-// ====== HÀM HỖ TRỢ CHUNG ======
-function speakKorean(text, rate = 0.95) {
-  if (!("speechSynthesis" in window)) {
-    alert("Trình duyệt không hỗ trợ đọc giọng nói.");
+let currentCard = 0;
+let currentQuizIndex = 0;
+let currentTopikIndex = 0;
+
+// Hàm phát âm tiếng Hàn chuẩn trên điện thoại/iPad
+function speakKorean(text) {
+  if (!('speechSynthesis' in window)) {
+    alert("Trình duyệt chưa hỗ trợ đọc giọng nói.");
     return;
   }
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "ko-KR";
-  utter.rate = rate;
+  utter.lang = 'ko-KR';
+  utter.rate = 0.9;
   window.speechSynthesis.speak(utter);
 }
 
-function showImage(imgEl, fallbackEl, src) {
-  imgEl.classList.remove("hidden");
-  fallbackEl.classList.add("hidden");
-  imgEl.src = src;
-  imgEl.onerror = () => {
-    imgEl.classList.add("hidden");
-    fallbackEl.classList.remove("hidden");
-    fallbackEl.textContent = `Chưa có ảnh: "${src}" (Hãy thả ảnh vào thư mục images)`;
-  };
+// Tạo khung hộp có tự động nhận diện tranh box-quiz.png
+function createSketchBox(innerHTML, extraClass = "", tag = "div") {
+  const el = document.createElement(tag);
+  el.className = `sketch-box ${extraClass}`.trim();
+  el.innerHTML = `
+    <img class="frame-art" src="images/box-quiz.png" alt=""
+         onload="this.parentElement.classList.add('has-frame')"
+         onerror="this.remove()">
+    <div class="sketch-box-inner">${innerHTML}</div>
+  `;
+  return el;
 }
 
-// ====== CHUYỂN TAB CHÍNH ======
-document.querySelectorAll(".nav-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach((t) => t.classList.add("hidden"));
-    btn.classList.add("active");
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.remove("hidden");
+// --- CHUYỂN TAB CHÍNH ---
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`sec-${btn.dataset.tab}`).classList.add('active');
   });
 });
 
-// ====== TAB 1: TỪ VỰNG THEO CỤM ======
-const topicSelect = document.getElementById("topic-select");
-const topics = ["Tất cả chủ đề", ...new Set(VOCAB_CHUNKS.map((v) => v.topic))];
-topics.forEach((t) => {
-  const opt = document.createElement("option");
-  opt.value = t;
-  opt.textContent = t;
-  topicSelect.appendChild(opt);
-});
+// --- TAB 1: FLASHCARD TỪ VỰNG ---
+const flashcardEl = document.getElementById('flashcard');
 
-let filteredVocab = [...VOCAB_CHUNKS];
-let vocabIndex = 0;
+function renderCard() {
+  const item = vocabData[currentCard];
+  flashcardEl.classList.remove('is-flipped');
 
-const flashcard = document.getElementById("flashcard");
-function renderVocabCard() {
-  const item = filteredVocab[vocabIndex];
-  flashcard.classList.remove("flipped");
-  showImage(document.getElementById("card-img"), document.getElementById("card-img-fallback"), item.image);
-  document.getElementById("card-chunk").textContent = item.chunk;
-  document.getElementById("card-roman").textContent = item.roman;
-  document.getElementById("card-meaning").textContent = item.meaning;
-  document.getElementById("card-note").textContent = item.note;
-  document.getElementById("vocab-counter").textContent = `${vocabIndex + 1} / ${filteredVocab.length}`;
+  document.getElementById('card-counter').textContent = `${currentCard + 1} / ${vocabData.length}`;
+  document.getElementById('card-korean').textContent = item.korean;
+  document.getElementById('card-roman').textContent = item.roman || "";
+  document.getElementById('card-meaning').textContent = item.meaning;
+  document.getElementById('card-ex-kr').textContent = item.exampleKr || "";
+  document.getElementById('card-ex-vi').textContent = item.exampleVi || "";
+
+  const imgWrap = document.getElementById('vocab-img-wrap');
+  imgWrap.innerHTML = "";
+  const img = document.createElement('img');
+  img.src = item.image;
+  img.alt = item.korean;
+  img.onerror = () => {
+    imgWrap.innerHTML = `<div class="vocab-img-placeholder">Chỗ dán tranh vẽ:<br>${item.image}</div>`;
+  };
+  imgWrap.appendChild(img);
 }
 
-topicSelect.addEventListener("change", () => {
-  const val = topicSelect.value;
-  filteredVocab = val === "Tất cả chủ đề" ? [...VOCAB_CHUNKS] : VOCAB_CHUNKS.filter((v) => v.topic === val);
-  vocabIndex = 0;
-  renderVocabCard();
+flashcardEl.addEventListener('click', () => flashcardEl.classList.toggle('is-flipped'));
+document.getElementById('btn-flip').addEventListener('click', () => flashcardEl.classList.toggle('is-flipped'));
+
+document.getElementById('btn-prev').addEventListener('click', () => {
+  currentCard = (currentCard - 1 + vocabData.length) % vocabData.length;
+  renderCard();
 });
 
-flashcard.addEventListener("click", () => flashcard.classList.toggle("flipped"));
-document.getElementById("btn-speak-chunk").addEventListener("click", (e) => {
+document.getElementById('btn-next').addEventListener('click', () => {
+  currentCard = (currentCard + 1) % vocabData.length;
+  renderCard();
+});
+
+document.getElementById('btn-speak').addEventListener('click', () => {
+  speakKorean(vocabData[currentCard].korean);
+});
+
+document.getElementById('btn-speak-ex').addEventListener('click', (e) => {
   e.stopPropagation();
-  speakKorean(filteredVocab[vocabIndex].chunk);
-});
-document.getElementById("btn-prev-card").addEventListener("click", () => {
-  vocabIndex = (vocabIndex - 1 + filteredVocab.length) % filteredVocab.length;
-  renderVocabCard();
-});
-document.getElementById("btn-next-card").addEventListener("click", () => {
-  vocabIndex = (vocabIndex + 1) % filteredVocab.length;
-  renderVocabCard();
-});
-document.getElementById("btn-shuffle-card").addEventListener("click", () => {
-  filteredVocab.sort(() => Math.random() - 0.5);
-  vocabIndex = 0;
-  renderVocabCard();
+  speakKorean(vocabData[currentCard].exampleKr);
 });
 
-// Chuyển đổi Flashcard <-> Quiz từ vựng
-const btnVocabCard = document.getElementById("btn-vocab-card");
-const btnVocabQuiz = document.getElementById("btn-vocab-quiz");
-btnVocabCard.addEventListener("click", () => {
-  btnVocabCard.classList.add("active");
-  btnVocabQuiz.classList.remove("active");
-  document.getElementById("vocab-card-view").classList.remove("hidden");
-  document.getElementById("vocab-quiz-view").classList.add("hidden");
-});
-btnVocabQuiz.addEventListener("click", () => {
-  btnVocabQuiz.classList.add("active");
-  btnVocabCard.classList.remove("active");
-  document.getElementById("vocab-quiz-view").classList.remove("hidden");
-  document.getElementById("vocab-card-view").classList.add("hidden");
-  renderVocabQuiz();
+// Chuyển đổi Flashcard <-> Quiz
+document.getElementById('mode-flashcard').addEventListener('click', (e) => {
+  e.target.classList.add('active');
+  document.getElementById('mode-quiz').classList.remove('active');
+  document.getElementById('vocab-flashcard-view').classList.remove('hidden');
+  document.getElementById('vocab-quiz-view').classList.add('hidden');
 });
 
-function renderVocabQuiz() {
-  const correct = filteredVocab[Math.floor(Math.random() * filteredVocab.length)];
-  showImage(document.getElementById("quiz-img"), document.getElementById("quiz-img-fallback"), correct.image);
-  const optionsBox = document.getElementById("vocab-quiz-options");
-  const feedback = document.getElementById("vocab-quiz-feedback");
-  const nextBtn = document.getElementById("btn-next-vocab-quiz");
-  optionsBox.innerHTML = "";
-  feedback.textContent = "";
-  nextBtn.classList.add("hidden");
+document.getElementById('mode-quiz').addEventListener('click', (e) => {
+  e.target.classList.add('active');
+  document.getElementById('mode-flashcard').classList.remove('active');
+  document.getElementById('vocab-flashcard-view').classList.add('hidden');
+  document.getElementById('vocab-quiz-view').classList.remove('hidden');
+  renderQuiz();
+});
 
-  let choices = [...VOCAB_CHUNKS].sort(() => Math.random() - 0.5).slice(0, 4);
-  if (!choices.includes(correct)) choices[0] = correct;
-  choices.sort(() => Math.random() - 0.5);
+function renderQuiz() {
+  const item = vocabData[currentQuizIndex];
+  const promptEl = document.getElementById('quiz-prompt');
+  const optionsEl = document.getElementById('quiz-options');
+  const feedbackEl = document.getElementById('quiz-feedback');
+  feedbackEl.textContent = "";
 
-  choices.forEach((c) => {
-    const btn = document.createElement("button");
-    btn.textContent = c.chunk;
-    btn.addEventListener("click", () => {
-      speakKorean(correct.chunk);
-      Array.from(optionsBox.children).forEach((b) => (b.disabled = true));
-      if (c.chunk === correct.chunk) {
-        btn.classList.add("correct");
-        feedback.textContent = `Chính xác! "${correct.chunk}" = ${correct.meaning}`;
+  promptEl.innerHTML = `
+    <div class="korean-word">${item.korean}</div>
+    <button class="sketch-pill small-btn" onclick="speakKorean('${item.korean}')">🔊 Nghe lại từ này</button>
+  `;
+
+  // Tạo danh sách đáp án xáo trộn
+  const choices = vocabData.map(v => v.meaning).sort(() => Math.random() - 0.5);
+  optionsEl.innerHTML = "";
+  choices.forEach(choice => {
+    const btn = createSketchBox(choice, "quiz-option-btn", "button");
+    btn.addEventListener('click', () => {
+      if (choice === item.meaning) {
+        btn.classList.add('is-correct');
+        feedbackEl.textContent = "Chính xác! Giỏi quá 🎉";
+        speakKorean(item.korean);
       } else {
-        btn.classList.add("wrong");
-        feedback.textContent = `Sai rồi! Đáp án đúng là "${correct.chunk}" (${correct.meaning})`;
-      }
-      nextBtn.classList.remove("hidden");
-    });
-    optionsBox.appendChild(btn);
-  });
-}
-document.getElementById("btn-next-vocab-quiz").addEventListener("click", renderVocabQuiz);
-
-// ====== TAB 2: NGỮ PHÁP ======
-const grammarSelect = document.getElementById("grammar-select");
-GRAMMAR_LIST.forEach((g, idx) => {
-  const opt = document.createElement("option");
-  opt.value = idx;
-  opt.textContent = g.title;
-  grammarSelect.appendChild(opt);
-});
-
-function renderGrammar(idx) {
-  const g = GRAMMAR_LIST[idx];
-  document.getElementById("gram-title").textContent = g.title;
-  document.getElementById("gram-meaning").textContent = g.meaning;
-  document.getElementById("gram-usage").textContent = g.usage;
-
-  const exList = document.getElementById("gram-examples");
-  exList.innerHTML = "";
-  g.examples.forEach((ex) => {
-    const div = document.createElement("div");
-    div.className = "example-item";
-    div.innerHTML = `<strong>${ex.kr}</strong><br><small>${ex.vi}</small>`;
-    div.style.cursor = "pointer";
-    div.title = "Bấm để nghe";
-    div.addEventListener("click", () => speakKorean(ex.kr));
-    exList.appendChild(div);
-  });
-
-  document.getElementById("gram-prac-q").textContent = g.practice.question;
-  document.getElementById("gram-prac-hint").textContent = `Gợi ý: ${g.practice.hint}`;
-  document.getElementById("gram-prac-input").value = "";
-  document.getElementById("gram-prac-feedback").textContent = "";
-}
-
-grammarSelect.addEventListener("change", () => renderGrammar(grammarSelect.value));
-document.getElementById("btn-check-gram").addEventListener("click", () => {
-  const g = GRAMMAR_LIST[grammarSelect.value];
-  const userAns = document.getElementById("gram-prac-input").value.trim();
-  const fb = document.getElementById("gram-prac-feedback");
-  if (userAns === g.practice.answer) {
-    fb.textContent = `🎉 Chuẩn xác! Đáp án là "${g.practice.answer}".`;
-    fb.style.color = "#155724";
-  } else {
-    fb.textContent = `❌ Chưa đúng. Đáp án đúng là: "${g.practice.answer}"`;
-    fb.style.color = "#721c24";
-  }
-});
-
-// ====== TAB 3: 4 KỸ NĂNG ======
-document.querySelectorAll(".skill-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".skill-btn").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".skill-panel").forEach((p) => p.classList.add("hidden"));
-    btn.classList.add("active");
-    document.getElementById(`skill-${btn.dataset.skill}`).classList.remove("hidden");
-  });
-});
-
-// 3.1 Nghe
-let listenIdx = 0;
-document.getElementById("btn-listen-normal").addEventListener("click", () => {
-  speakKorean(SKILLS_DATA.listening[listenIdx].text, 0.95);
-});
-document.getElementById("btn-listen-slow").addEventListener("click", () => {
-  speakKorean(SKILLS_DATA.listening[listenIdx].text, 0.65);
-});
-document.getElementById("btn-check-listen").addEventListener("click", () => {
-  const target = SKILLS_DATA.listening[listenIdx];
-  const input = document.getElementById("listen-input").value.trim();
-  const clean = (s) => s.replace(/[.?!,\s]/g, "");
-  const fb = document.getElementById("listen-feedback");
-  if (clean(input) === clean(target.text)) {
-    fb.textContent = `✅ Chính xác! Nghĩa là: "${target.hint}"`;
-  } else {
-    fb.textContent = `💡 Câu gốc: "${target.text}" (${target.hint})`;
-  }
-});
-document.getElementById("btn-next-listen").addEventListener("click", () => {
-  listenIdx = (listenIdx + 1) % SKILLS_DATA.listening.length;
-  document.getElementById("listen-input").value = "";
-  document.getElementById("listen-feedback").textContent = "";
-  speakKorean(SKILLS_DATA.listening[listenIdx].text, 0.95);
-});
-
-// 3.2 Nói
-let speakIdx = 0;
-function renderSpeak() {
-  const item = SKILLS_DATA.speaking[speakIdx];
-  document.getElementById("speak-target-kr").textContent = item.kr;
-  document.getElementById("speak-target-vi").textContent = item.vi;
-  document.getElementById("speak-result").textContent = "";
-  document.getElementById("speak-status").textContent = "";
-}
-document.getElementById("btn-listen-sample").addEventListener("click", () => {
-  speakKorean(SKILLS_DATA.speaking[speakIdx].kr);
-});
-document.getElementById("btn-next-speak").addEventListener("click", () => {
-  speakIdx = (speakIdx + 1) % SKILLS_DATA.speaking.length;
-  renderSpeak();
-});
-document.getElementById("btn-start-mic").addEventListener("click", () => {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const status = document.getElementById("speak-status");
-  const result = document.getElementById("speak-result");
-  if (!SpeechRecognition) {
-    status.textContent = "Trình duyệt này chưa hỗ trợ nhận diện giọng nói. Hãy mở bằng Chrome hoặc Edge nhé!";
-    return;
-  }
-  const recognition = new SpeechRecognition();
-  recognition.lang = "ko-KR";
-  status.textContent = "🎙️ Đang nghe... Bạn hãy đọc to câu tiếng Hàn!";
-  recognition.start();
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    status.textContent = "Đã thu âm xong.";
-    result.textContent = `Máy nghe được bạn nói: "${transcript}"`;
-  };
-  recognition.onerror = () => {
-    status.textContent = "Không nghe rõ hoặc chưa cấp quyền Micro.";
-  };
-});
-
-// 3.3 Đọc
-function renderReading() {
-  const r = SKILLS_DATA.reading;
-  document.getElementById("read-title").textContent = r.title;
-  document.getElementById("read-passage").textContent = r.passage;
-  document.getElementById("read-trans").textContent = r.translation;
-  document.getElementById("read-question").textContent = r.question;
-
-  const optBox = document.getElementById("read-options");
-  optBox.innerHTML = "";
-  r.options.forEach((opt, i) => {
-    const btn = document.createElement("button");
-    btn.textContent = opt;
-    btn.addEventListener("click", () => {
-      Array.from(optBox.children).forEach((b) => (b.disabled = true));
-      if (i === r.answerIndex) {
-        btn.classList.add("correct");
-        document.getElementById("read-feedback").textContent = "✅ Đúng rồi!";
-      } else {
-        btn.classList.add("wrong");
-        document.getElementById("read-feedback").textContent = "❌ Chưa chính xác, đọc kỹ lại đoạn văn nhé!";
+        btn.classList.add('is-wrong');
+        feedbackEl.textContent = "Chưa đúng rồi, thử lại nhé!";
       }
     });
-    optBox.appendChild(btn);
+    optionsEl.appendChild(btn);
   });
 }
-document.getElementById("btn-toggle-trans").addEventListener("click", () => {
-  document.getElementById("read-trans").classList.toggle("hidden");
+
+document.getElementById('btn-next-quiz').addEventListener('click', () => {
+  currentQuizIndex = (currentQuizIndex + 1) % vocabData.length;
+  renderQuiz();
 });
 
-// 3.4 Viết (Lưu nháp tự động vào trình duyệt)
-document.getElementById("write-prompt").textContent = SKILLS_DATA.writing.prompt;
-document.getElementById("write-sample-box").textContent = `Bài mẫu tham khảo: ${SKILLS_DATA.writing.sampleAnswer}`;
-const writeArea = document.getElementById("write-area");
-writeArea.value = localStorage.getItem("korean_writing_draft") || "";
-document.getElementById("char-count").textContent = `Số ký tự: ${writeArea.value.length}`;
-
-writeArea.addEventListener("input", () => {
-  localStorage.setItem("korean_writing_draft", writeArea.value);
-  document.getElementById("char-count").textContent = `Số ký tự: ${writeArea.value.length}`;
-});
-document.getElementById("btn-toggle-sample-write").addEventListener("click", () => {
-  document.getElementById("write-sample-box").classList.toggle("hidden");
-});
-
-// ====== TAB 4: ÔN THI TOPIK ======
-let topikIdx = 0;
-let topikSeconds = 600; // 10 phút đếm ngược
-let topikTimerInterval = null;
-
-function startTopikTimer() {
-  clearInterval(topikTimerInterval);
-  topikSeconds = 600;
-  topikTimerInterval = setInterval(() => {
-    if (topikSeconds <= 0) {
-      clearInterval(topikTimerInterval);
-      document.getElementById("topik-timer").textContent = "⏱️ Hết giờ!";
-      return;
-    }
-    topikSeconds--;
-    const m = String(Math.floor(topikSeconds / 60)).padStart(2, "0");
-    const s = String(topikSeconds % 60).padStart(2, "0");
-    document.getElementById("topik-timer").textContent = `⏱️ ${m}:${s}`;
-  }, 1000);
+// --- TAB 2: NGỮ PHÁP ---
+function renderGrammar() {
+  const container = document.getElementById('sec-grammar');
+  container.innerHTML = "";
+  grammarData.forEach(g => {
+    const box = createSketchBox(`
+      <div class="kr-title">${g.pattern}</div>
+      <p style="margin: 6px 0 10px;"><strong>Ý nghĩa:</strong> ${g.meaning}</p>
+      <div class="example-box">
+        <p class="example-kr">${g.exampleKr}</p>
+        <p class="example-vi">${g.exampleVi}</p>
+        <button class="sketch-pill small-btn" onclick="speakKorean('${g.exampleKr}')">🔊 Nghe ví dụ</button>
+      </div>
+    `);
+    container.appendChild(box);
+  });
 }
 
+// --- TAB 3: 4 KỸ NĂNG ---
+function renderSkill(skillKey) {
+  const container = document.getElementById('skill-content');
+  container.innerHTML = "";
+  const data = skillsData[skillKey];
+
+  if (skillKey === 'listening' || skillKey === 'reading') {
+    const topHTML = skillKey === 'listening'
+      ? `<div class="kr-title">${data.title}</div>
+         <button class="sketch-pill small-btn" onclick="speakKorean('${data.audioText}')">🔊 Bấm để nghe đoạn hội thoại</button>`
+      : `<div class="kr-title">${data.title}</div>
+         <p class="example-kr" style="margin: 10px 0;">${data.passage}</p>
+         <p><strong>Câu hỏi:</strong> ${data.question}</p>`;
+
+    container.appendChild(createSketchBox(topHTML));
+    const fb = document.createElement('div');
+    fb.className = 'quiz-feedback';
+
+    data.options.forEach((opt, idx) => {
+      const btn = createSketchBox(opt, "quiz-option-btn", "button");
+      btn.addEventListener('click', () => {
+        if (idx === data.answerIndex) {
+          btn.classList.add('is-correct');
+          fb.textContent = "Chuẩn xác 100%! 🌟";
+        } else {
+          btn.classList.add('is-wrong');
+          fb.textContent = "Sai mất rồi, chọn lại nhé!";
+        }
+      });
+      container.appendChild(btn);
+    });
+    container.appendChild(fb);
+  } else if (skillKey === 'speaking') {
+    container.appendChild(createSketchBox(`<div class="kr-title">${data.title}</div>`));
+    data.sentences.forEach(s => {
+      container.appendChild(createSketchBox(`
+        <p class="example-kr">${s.kr}</p>
+        <p class="example-vi">${s.vi}</p>
+        <button class="sketch-pill small-btn" onclick="speakKorean('${s.kr}')">🔊 Nghe giọng mẫu</button>
+      `));
+    });
+  } else if (skillKey === 'writing') {
+    container.appendChild(createSketchBox(`
+      <div class="kr-title">${data.title}</div>
+      <p style="margin-top:8px;">${data.prompt}</p>
+      <textarea class="write-area" placeholder="Gõ câu tiếng Hàn của bạn vào đây..."></textarea>
+      <button class="sketch-pill small-btn" id="btn-show-sample">Xem câu mẫu gợi ý</button>
+      <p id="sample-ans" class="hidden" style="margin-top:10px; color: var(--correct);">
+        <strong>Gợi ý:</strong> ${data.sample}
+      </p>
+    `));
+    document.getElementById('btn-show-sample').addEventListener('click', () => {
+      document.getElementById('sample-ans').classList.remove('hidden');
+      speakKorean(data.sample);
+    });
+  }
+}
+
+document.querySelectorAll('[data-skill]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-skill]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderSkill(btn.dataset.skill);
+  });
+});
+
+// --- TAB 4: LUYỆN ĐỀ TOPIK ---
 function renderTopik() {
-  const q = TOPIK_QUESTIONS[topikIdx];
-  document.getElementById("topik-progress").textContent = `Câu ${topikIdx + 1} / ${TOPIK_QUESTIONS.length}`;
-  document.getElementById("topik-tag").textContent = q.level;
+  const container = document.getElementById('sec-topik');
+  container.innerHTML = "";
+  const q = topikData[currentTopikIndex];
 
-  const passageEl = document.getElementById("topik-passage");
-  if (q.passage) {
-    passageEl.textContent = q.passage;
-    passageEl.classList.remove("hidden");
-  } else {
-    passageEl.classList.add("hidden");
-  }
+  container.appendChild(createSketchBox(`
+    <div style="font-size:0.95rem; color:var(--ink-soft);">Câu ${currentTopikIndex + 1} / ${topikData.length}</div>
+    <p class="example-kr" style="white-space:pre-line; margin-top:8px;">${q.question}</p>
+  `));
 
-  document.getElementById("topik-question").textContent = q.question;
-  const expEl = document.getElementById("topik-explanation");
-  expEl.classList.add("hidden");
-  expEl.textContent = `💡 Giải thích: ${q.explanation}`;
+  const fb = document.createElement('div');
+  fb.className = 'quiz-feedback';
 
-  const optBox = document.getElementById("topik-options");
-  optBox.innerHTML = "";
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement("button");
-    btn.textContent = `${i + 1}. ${opt}`;
-    btn.addEventListener("click", () => {
-      Array.from(optBox.children).forEach((b) => (b.disabled = true));
-      if (i === q.answer) {
-        btn.classList.add("correct");
+  q.options.forEach((opt, idx) => {
+    const btn = createSketchBox(`${idx + 1}. ${opt}`, "quiz-option-btn", "button");
+    btn.addEventListener('click', () => {
+      if (idx === q.answerIndex) {
+        btn.classList.add('is-correct');
+        fb.textContent = `Đúng rồi! ${q.explain}`;
       } else {
-        btn.classList.add("wrong");
-        optBox.children[q.answer].classList.add("correct");
+        btn.classList.add('is-wrong');
+        fb.textContent = "Chưa đúng, thử lại đáp án khác nhé!";
       }
-      expEl.classList.remove("hidden");
     });
-    optBox.appendChild(btn);
+    container.appendChild(btn);
   });
+
+  container.appendChild(fb);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'sketch-pill';
+  nextBtn.textContent = 'Câu TOPIK tiếp theo ➔';
+  nextBtn.addEventListener('click', () => {
+    currentTopikIndex = (currentTopikIndex + 1) % topikData.length;
+    renderTopik();
+  });
+  container.appendChild(nextBtn);
 }
 
-document.getElementById("btn-topik-prev").addEventListener("click", () => {
-  topikIdx = (topikIdx - 1 + TOPIK_QUESTIONS.length) % TOPIK_QUESTIONS.length;
-  renderTopik();
-});
-document.getElementById("btn-topik-next").addEventListener("click", () => {
-  topikIdx = (topikIdx + 1) % TOPIK_QUESTIONS.length;
-  renderTopik();
-});
-document.getElementById("btn-topik-reset").addEventListener("click", () => {
-  topikIdx = 0;
-  startTopikTimer();
-  renderTopik();
-});
-
-// Khởi chạy dữ liệu ban đầu
-renderVocabCard();
-renderGrammar(0);
-renderSpeak();
-renderReading();
+// Khởi chạy ban đầu
+renderCard();
+renderGrammar();
+renderSkill('listening');
 renderTopik();
-startTopikTimer();
+
+ 
