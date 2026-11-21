@@ -395,7 +395,7 @@ body {
   margin-bottom: 8px;
 }
 
-/* Khung ảnh minh họa Pinterest kiểu Polaroid dán băng keo */
+/* Khung ảnh minh họa Pinterest kiểu Polaroid */
 .vocab-img-wrap {
   width: 155px;
   height: 155px;
@@ -426,7 +426,7 @@ body {
 
 .korean-word {
   font-family: var(--font-kr);
-  font-size: 1.95rem;
+  font-size: 2.05rem;
   font-weight: 700;
   color: var(--blue-main);
   line-height: 1.25;
@@ -465,7 +465,7 @@ body {
 
 .example-kr {
   font-family: var(--font-kr);
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--blue-main);
   margin-bottom: 4px;
@@ -528,7 +528,7 @@ body {
 
 .kr-title {
   font-family: var(--font-kr);
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--blue-main);
 }
@@ -567,7 +567,7 @@ body {
   width: 100%;
   padding: 9px 12px;
   font-family: var(--font-kr);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: var(--blue-main);
   border: 2px dashed var(--blue-main);
   border-radius: 12px;
@@ -599,7 +599,7 @@ body {
 .ox-stmt {
   flex: 1;
   font-family: var(--font-kr);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
 }
 
 .ox-btns {
@@ -644,7 +644,7 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-kr);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--blue-main);
 }
