@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Mali:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
   <!-- LỚP PHỦ MỜ KHI MỞ MENU CẠNH -->
@@ -39,7 +39,6 @@
 
   <!-- KHUNG GIAO DIỆN CHÍNH Ở GIỮA -->
   <div class="app-wrapper">
-    <!-- HEADER -->
     <header class="site-header">
       <button class="art-btn menu-toggle-btn" id="btn-open-menu" title="Mở danh sách chủ đề">
         <img src="images/btn-menu.png" alt="Menu"
@@ -56,7 +55,6 @@
       </div>
     </header>
 
-    <!-- NHÃN CHỦ ĐỀ ĐANG HỌC -->
     <div class="current-topic-bar">
       <span>Chủ đề: </span>
       <strong id="active-topic-name" class="pink-highlight">Tất cả chủ đề</strong>
@@ -86,10 +84,9 @@
       </button>
     </nav>
 
-    <!-- KHU VỰC NỘI DUNG CHÍNH (3 SECTION ĐỘC LẬP) -->
     <main class="main-content">
 
-      <!-- [1] BẮT ĐẦU TỪ VỰNG -->
+      <!-- TAB 1: TỪ VỰNG -->
       <section id="sec-vocab" class="tab-section active">
         <div id="vocab-flashcard-view">
           <div class="card-counter" id="card-counter">1 / 1</div>
@@ -163,9 +160,8 @@
           </div>
         </div>
       </section>
-      <!-- KẾT THÚC TỪ VỰNG -->
 
-      <!-- [2] BẮT ĐẦU NGỮ PHÁP -->
+      <!-- TAB 2: NGỮ PHÁP -->
       <section id="sec-grammar" class="tab-section">
         <div class="sub-switch">
           <button class="sketch-pill active" data-gsub="topic">Theo chủ đề</button>
@@ -176,9 +172,8 @@
         </div>
         <div id="grammar-content"></div>
       </section>
-      <!-- KẾT THÚC NGỮ PHÁP -->
 
-      <!-- [3] BẮT ĐẦU 4 KỸ NĂNG -->
+      <!-- TAB 3: 4 KỸ NĂNG -->
       <section id="sec-skills" class="tab-section">
         <div class="sub-switch">
           <button class="sketch-pill active" data-skill="listening">Nghe (듣기)</button>
@@ -188,13 +183,11 @@
         </div>
         <div id="skill-content"></div>
       </section>
-      <!-- KẾT THÚC 4 KỸ NĂNG -->
 
     </main>
   </div>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="data.js?v=3"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
-
