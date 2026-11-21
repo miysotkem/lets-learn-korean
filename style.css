@@ -1,10 +1,11 @@
 :root {
-  --paper-bg: #fbf6ec;
-  --ink: #382c25;
-  --ink-soft: #6e5d52;
-  --accent: #d96b43;
-  --correct: #4c8c5a;
-  --wrong: #c84b4b;
+  --blue-main: #387CD3;         /* Màu chính cho phần bình thường */
+  --blue-soft: rgba(56, 124, 211, 0.09);
+  --pink-note: #F98BC8;         /* Màu nhấn cho phần cần lưu ý */
+  --pink-soft: rgba(249, 139, 200, 0.16);
+  --paper-bg: #fcfdff;
+  --font-vi: 'Mali', cursive, sans-serif;
+  --font-kr: 'Gaegu', 'Mali', cursive, sans-serif;
   --sketch-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
@@ -16,32 +17,159 @@
 }
 
 body {
-  font-family: 'Patrick Hand', cursive, sans-serif;
-  color: var(--ink);
+  font-family: var(--font-vi);
+  color: var(--blue-main);
   min-height: 100vh;
-  /* Tự dùng bg-main.png nếu bạn đã up, nếu chưa thì dùng nền giấy chấm bi kem */
   background-color: var(--paper-bg);
   background-image:
     url('images/bg-main.png'),
-    radial-gradient(#d5c8b4 1.2px, transparent 1.2px);
+    radial-gradient(rgba(56, 124, 211, 0.22) 1.2px, transparent 1.2px);
   background-size: cover, 22px 22px;
   background-position: center top, 0 0;
   background-attachment: fixed;
+  line-height: 1.5;
 }
 
 .app-wrapper {
-  max-width: 500px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 14px 14px 40px;
+  padding: 12px 14px 48px;
 }
 
-/* --- NÚT VẼ TAY CHUNG --- */
+.hidden {
+  display: none !important;
+}
+
+.tab-section {
+  display: none;
+}
+
+.tab-section.active {
+  display: block;
+}
+
+/* --- MÀU LƯU Ý & NHẤN MẠNH (#F98BC8) --- */
+.pink-highlight {
+  color: var(--pink-note);
+  font-weight: 700;
+}
+
+.note-label {
+  display: inline-block;
+  color: var(--pink-note);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.note-box {
+  background: var(--pink-soft);
+  border: 2px dashed var(--pink-note);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  color: var(--blue-main);
+}
+
+.note-box strong,
+.note-box .note-title {
+  color: var(--pink-note);
+}
+
+/* --- THANH MENU TRƯỢT BÊN CẠNH (DRAWER) --- */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(56, 124, 211, 0.25);
+  backdrop-filter: blur(2px);
+  z-index: 90;
+}
+
+.side-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 84vw;
+  background: #ffffff;
+  border-right: 3px dashed var(--blue-main);
+  padding: 18px 16px;
+  z-index: 100;
+  transform: translateX(-105%);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow-y: auto;
+}
+
+.side-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed var(--pink-note);
+  margin-bottom: 14px;
+}
+
+.drawer-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--blue-main);
+}
+
+.drawer-section {
+  margin-bottom: 20px;
+}
+
+.drawer-hint {
+  font-size: 0.9rem;
+  color: var(--blue-main);
+  margin-bottom: 8px;
+}
+
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topic-item-btn {
+  text-align: left;
+  font-family: var(--font-vi);
+  font-size: 1rem;
+  padding: 9px 12px;
+  background: var(--blue-soft);
+  border: 2px dashed var(--blue-main);
+  border-radius: var(--sketch-radius);
+  color: var(--blue-main);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.topic-item-btn.active {
+  background: var(--pink-soft);
+  border: 2.5px solid var(--pink-note);
+  color: var(--pink-note);
+  font-weight: 700;
+}
+
+.ai-key-status {
+  font-size: 0.88rem;
+  margin-top: 6px;
+  color: var(--pink-note);
+  font-weight: 700;
+}
+
+/* --- NÚT VẼ TAY CHUNG & HIỆU ỨNG CLICK --- */
 .art-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-family: inherit;
-  color: var(--ink);
+  font-family: var(--font-vi);
+  color: var(--blue-main);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -49,11 +177,11 @@ body {
   position: relative;
 }
 
-.art-btn:active {
+.art-btn:active,
+.sketch-pill:active {
   transform: scale(0.92) rotate(-1.5deg);
 }
 
-/* Khi đã có tranh tự vẽ (.has-art) -> Ẩn chữ/viền mặc định, chỉ hiện tranh */
 .art-btn.has-art .fallback-label,
 .banner-box.has-art .fallback-banner {
   display: none;
@@ -66,110 +194,139 @@ body {
   object-fit: contain;
 }
 
-/* --- BANNER TIÊU ĐỀ --- */
+/* --- HEADER & BANNER --- */
 .site-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.menu-toggle-btn {
+  flex-shrink: 0;
+  min-width: 78px;
+  height: 44px;
+}
+
+.menu-toggle-btn:not(.has-art) {
+  border: 2px dashed var(--blue-main);
+  border-radius: var(--sketch-radius);
+  background: #ffffff;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.banner-box {
+  flex: 1;
   text-align: center;
-  margin-bottom: 12px;
 }
 
 .banner-box img {
   max-width: 100%;
-  max-height: 95px;
+  max-height: 82px;
   object-fit: contain;
   margin: 0 auto;
 }
 
 .fallback-banner {
   display: inline-block;
-  font-size: 1.75rem;
-  padding: 6px 22px;
-  border: 2.5px dashed var(--ink);
+  font-size: 1.45rem;
+  padding: 5px 16px;
+  border: 2.5px dashed var(--blue-main);
   border-radius: var(--sketch-radius);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--blue-main);
 }
 
-/* --- 4 TAB CHUYỂN CHẾ ĐỘ --- */
+.current-topic-bar {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+/* --- 3 TAB CHÍNH --- */
 .nav-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .tab-btn {
-  height: 54px;
+  height: 52px;
   padding: 2px;
 }
 
 .tab-btn:not(.has-art) {
-  border: 2px dashed var(--ink-soft);
+  border: 2px dashed var(--blue-main);
   border-radius: var(--sketch-radius);
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.82);
   font-size: 1.05rem;
-  font-weight: bold;
+  font-weight: 700;
+  color: var(--blue-main);
 }
 
 .tab-btn:not(.has-art).active {
   border-style: solid;
-  border-color: var(--accent);
-  background: #fff3e6;
+  border-color: var(--pink-note);
+  background: var(--pink-soft);
+  color: var(--pink-note);
   transform: translateY(-2px);
 }
 
 .tab-btn.has-art.active {
   transform: translateY(-4px) scale(1.05);
-  filter: drop-shadow(0 4px 4px rgba(56, 44, 37, 0.25));
+  filter: drop-shadow(0 4px 5px rgba(249, 139, 200, 0.45));
 }
 
 /* --- NÚT PHỤ DẠNG PHÁC THẢO --- */
 .sub-switch {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
 .sketch-pill {
-  font-family: inherit;
-  font-size: 1rem;
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 2px dashed var(--ink-soft);
+  font-family: var(--font-vi);
+  font-size: 0.95rem;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px dashed var(--blue-main);
   border-radius: var(--sketch-radius);
-  color: var(--ink);
+  color: var(--blue-main);
   cursor: pointer;
+  transition: transform 0.12s ease;
 }
 
 .sketch-pill.active {
   border-style: solid;
-  border-color: var(--ink);
-  background: #ffe9d2;
-  font-weight: bold;
+  border-color: var(--pink-note);
+  background: var(--pink-soft);
+  color: var(--pink-note);
+  font-weight: 700;
 }
 
 .small-btn {
-  margin-top: 10px;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
+  padding: 5px 10px;
 }
 
-.hidden {
-  display: none !important;
-}
-
-/* --- FLASHCARD 3D & KHUNG VẼ TAY --- */
+/* --- FLASHCARD 3D & ẢNH PINTEREST --- */
 .card-counter {
   text-align: center;
-  font-size: 1.05rem;
-  color: var(--ink-soft);
+  font-size: 1rem;
+  color: var(--blue-main);
   margin-bottom: 6px;
 }
 
 .flashcard-stage {
   perspective: 1000px;
   width: 100%;
-  height: 360px;
-  margin-bottom: 16px;
+  height: 390px;
+  margin-bottom: 14px;
 }
 
 .flashcard {
@@ -195,22 +352,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28px 24px;
+  padding: 24px 22px;
 }
 
-/* Khung phác thảo khi chưa up card-front.png / card-back.png */
 .card-face:not(.has-frame) {
-  background: rgba(255, 253, 249, 0.92);
-  border: 3px dashed var(--ink);
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px dashed var(--blue-main);
   border-radius: var(--sketch-radius);
-  box-shadow: 4px 5px 0 rgba(56, 44, 37, 0.12);
+  box-shadow: 4px 5px 0 rgba(56, 124, 211, 0.14);
 }
 
 .card-back {
   transform: rotateY(180deg);
 }
 
-/* Ảnh khung thẻ tự vẽ (card-front.png / card-back.png) */
 .frame-art {
   position: absolute;
   inset: 0;
@@ -228,115 +383,141 @@ body {
   width: 100%;
 }
 
-/* Tranh minh họa từ vựng bên trong thẻ */
+.topic-tag {
+  display: inline-block;
+  font-size: 0.82rem;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: var(--pink-soft);
+  color: var(--pink-note);
+  border: 1.5px dashed var(--pink-note);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Khung ảnh minh họa Pinterest kiểu Polaroid dán băng keo */
 .vocab-img-wrap {
   width: 155px;
   height: 155px;
-  margin: 0 auto 12px;
+  margin: 0 auto 10px;
+  padding: 5px;
+  background: #ffffff;
+  border: 2px dashed var(--blue-main);
+  border-radius: 14px;
+  transform: rotate(-1.5deg);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .vocab-img-wrap img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .vocab-img-placeholder {
-  width: 100%;
-  height: 100%;
-  border: 2px dashed #b9a996;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--ink-soft);
+  font-size: 0.85rem;
+  color: var(--pink-note);
   padding: 8px;
 }
 
 .korean-word {
-  font-family: 'Gaegu', cursive;
-  font-size: 2.2rem;
+  font-family: var(--font-kr);
+  font-size: 1.95rem;
   font-weight: 700;
-  line-height: 1.2;
+  color: var(--blue-main);
+  line-height: 1.25;
 }
 
 .roman-hint {
-  font-size: 1.05rem;
-  color: var(--ink-soft);
-  margin-top: 4px;
+  font-size: 0.98rem;
+  color: var(--pink-note);
+  margin-top: 3px;
 }
 
 .meaning-word {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: var(--accent);
-  margin-bottom: 14px;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--pink-note);
+  margin-bottom: 6px;
+}
+
+.note-pill {
+  font-size: 0.92rem;
+  color: var(--blue-main);
+  background: var(--pink-soft);
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
 }
 
 .example-box {
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--blue-soft);
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1.5px dashed #c4b5a2;
+  border: 1.5px dashed var(--blue-main);
+  margin-bottom: 8px;
 }
 
 .example-kr {
-  font-family: 'Gaegu', cursive;
-  font-size: 1.45rem;
+  font-family: var(--font-kr);
+  font-size: 1.35rem;
   font-weight: 700;
+  color: var(--blue-main);
   margin-bottom: 4px;
 }
 
 .example-vi {
-  font-size: 1.05rem;
-  color: var(--ink-soft);
+  font-size: 0.98rem;
+  color: var(--blue-main);
 }
 
-/* --- 4 NÚT ĐIỀU KHIỂN THẺ --- */
+/* --- NÚT ĐIỀU KHIỂN THẺ --- */
 .card-controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .ctrl-btn {
-  width: 58px;
-  height: 58px;
+  width: 50px;
+  height: 50px;
 }
 
 .ctrl-btn.wide-btn {
-  width: 105px;
+  width: 96px;
 }
 
 .ctrl-btn:not(.has-art) {
-  border: 2.5px dashed var(--ink);
+  border: 2px dashed var(--blue-main);
   border-radius: var(--sketch-radius);
-  background: rgba(255, 255, 255, 0.85);
-  font-size: 1.25rem;
-  font-weight: bold;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue-main);
 }
 
-/* --- KHUNG DÙNG CHUNG CHO QUIZ / NGỮ PHÁP / KỸ NĂNG / TOPIK (box-quiz.png) --- */
+/* --- KHUNG HỘP VẼ TAY DÙNG CHUNG (box-quiz.png) --- */
 .sketch-box {
   position: relative;
-  padding: 20px 22px;
+  padding: 18px 18px;
   margin-bottom: 12px;
   width: 100%;
   text-align: left;
   background: none;
   border: none;
-  font-family: inherit;
-  color: var(--ink);
+  font-family: var(--font-vi);
+  color: var(--blue-main);
 }
 
 .sketch-box:not(.has-frame) {
-  background: rgba(255, 253, 249, 0.9);
-  border: 2.5px dashed var(--ink);
+  background: rgba(255, 255, 255, 0.94);
+  border: 2.5px dashed var(--blue-main);
   border-radius: var(--sketch-radius);
 }
 
@@ -345,59 +526,146 @@ body {
   z-index: 1;
 }
 
-.quiz-prompt-box {
-  text-align: center;
-  margin-bottom: 14px;
+.kr-title {
+  font-family: var(--font-kr);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--blue-main);
 }
 
 .quiz-option-btn {
   cursor: pointer;
   display: block;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   transition: transform 0.12s ease;
 }
 
-.quiz-option-btn:active {
-  transform: scale(0.97);
-}
-
 .quiz-option-btn.is-correct {
-  filter: drop-shadow(0 0 6px rgba(76, 140, 90, 0.6));
-  color: var(--correct);
-  font-weight: bold;
+  border-color: var(--blue-main) !important;
+  background: var(--blue-soft) !important;
+  font-weight: 700;
 }
 
 .quiz-option-btn.is-wrong {
-  filter: drop-shadow(0 0 6px rgba(200, 75, 75, 0.6));
-  color: var(--wrong);
+  border-color: var(--pink-note) !important;
+  background: var(--pink-soft) !important;
+  color: var(--pink-note);
 }
 
 .quiz-feedback {
   text-align: center;
-  font-size: 1.15rem;
-  min-height: 28px;
+  font-size: 1.05rem;
+  min-height: 26px;
   margin: 8px 0;
-  font-weight: bold;
+  color: var(--pink-note);
+  font-weight: 700;
 }
 
-.kr-title {
-  font-family: 'Gaegu', cursive;
-  font-size: 1.65rem;
-  font-weight: 700;
-  color: var(--accent);
+/* --- INPUT & TEXTAREA --- */
+.sketch-input,
+.write-area {
+  width: 100%;
+  padding: 9px 12px;
+  font-family: var(--font-kr);
+  font-size: 1.15rem;
+  color: var(--blue-main);
+  border: 2px dashed var(--blue-main);
+  border-radius: 12px;
+  background: #ffffff;
+  outline: none;
+}
+
+.sketch-input:focus,
+.write-area:focus {
+  border-style: solid;
+  border-color: var(--pink-note);
 }
 
 .write-area {
-  width: 100%;
-  min-height: 85px;
-  margin-top: 10px;
-  padding: 10px;
-  font-family: 'Gaegu', cursive;
-  font-size: 1.35rem;
-  border: 2px dashed var(--ink-soft);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.85);
+  min-height: 90px;
+  margin-top: 8px;
 }
-.tab-section { display: none; }
-.tab-section.active { display: block; }
 
+/* --- BẢNG ĐÚNG/SAI (O/X) GIỐNG SÁCH TIẾNG HÀN TỔNG HỢP --- */
+.ox-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1.5px dashed rgba(56, 124, 211, 0.3);
+}
+
+.ox-stmt {
+  flex: 1;
+  font-family: var(--font-kr);
+  font-size: 1.15rem;
+}
+
+.ox-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.ox-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px dashed var(--blue-main);
+  background: #fff;
+  color: var(--blue-main);
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.ox-btn.selected {
+  border-style: solid;
+  border-color: var(--pink-note);
+  background: var(--pink-soft);
+  color: var(--pink-note);
+}
+
+/* --- GIẤY Ô VUÔNG HÀN QUỐC (원고지) --- */
+.wongoji-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  border-top: 2px solid var(--pink-note);
+  border-left: 2px solid var(--pink-note);
+  background: #ffffff;
+  margin-top: 10px;
+}
+
+.wongoji-cell {
+  aspect-ratio: 1 / 1.15;
+  border-right: 1.5px solid var(--pink-note);
+  border-bottom: 2px solid var(--pink-note);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-kr);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--blue-main);
+}
+
+/* --- BẢNG ĐỐI CHIẾU VĂN VIẾT --- */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.98rem;
+}
+
+.compare-table th {
+  background: var(--pink-soft);
+  color: var(--pink-note);
+  padding: 7px;
+  border: 1.5px dashed var(--pink-note);
+}
+
+.compare-table td {
+  padding: 7px;
+  border: 1.5px dashed var(--blue-main);
+  font-family: var(--font-kr);
+}
