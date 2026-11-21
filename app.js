@@ -518,7 +518,7 @@ function renderSkill(skillKey) {
     });
   }
 
-  // 4. KỸ NĂNG VIẾT (Giấy ô vuông 원고지 + Cấu trúc hô ứng + Từ văn viết + Luyện viết)
+  // 4. KỸ NĂNG VIẾT (Giấy ô vuông 원고지 + Cấu trúc hô ứng + Luyện viết)
   else if (skillKey === "writing") {
     const w = skillsData.writing;
 
@@ -539,20 +539,9 @@ function renderSkill(skillKey) {
       `).join("")}
     `));
 
-    // Mục 3: Bảng đối chiếu từ văn nói -> văn viết
-    container.appendChild(createSketchBox(`
-      <div class="note-label">3. Từ vựng chỉ dùng trong Văn viết (문어체)</div>
-      <table class="compare-table">
-        <thead><tr><th>Văn nói (구어체)</th><th>Văn viết (문어체)</th></tr></thead>
-        <tbody>
-          ${w.vocabPairs.map(p => `<tr><td>${p.spoken}</td><td><strong>${p.written}</strong></td></tr>`).join("")}
-        </tbody>
-      </table>
-    `));
-
-    // Mục 4: Thực hành viết trên khung giấy ô vuông 원고지 tương tác
+    // Mục 3: Thực hành viết trên khung giấy ô vuông 원고지 tương tác
     const practiceBox = createSketchBox(`
-      <div class="note-label">4. Luyện viết & Xem trước trên giấy ô vuông (원고지)</div>
+      <div class="note-label">3. Luyện viết & Xem trước trên giấy ô vuông (원고지)</div>
       <p style="margin-bottom:6px;">${w.prompt}</p>
       <textarea class="write-area" id="wongoji-input" placeholder="Gõ đoạn văn tiếng Hàn (nhớ thêm dấu cách đầu đoạn nếu muốn lùi ô)..."></textarea>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
