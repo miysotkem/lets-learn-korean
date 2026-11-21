@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Let's Learn Korean</title>
-  <!-- Font viết tay chuẩn dấu tiếng Việt (Mali) & tiếng Hàn (Gaegu) -->
+  <title>Let's Learn Korean - Sổ Tay Tự Vẽ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Mali:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
@@ -14,7 +13,7 @@
   <!-- LỚP PHỦ MỜ KHI MỞ MENU CẠNH -->
   <div class="drawer-backdrop hidden" id="drawer-backdrop"></div>
 
-  <!-- THANH MENU TRƯỢT BÊN CẠNH (CHỌN CHỦ ĐỀ & CÀI ĐẶT AI) -->
+  <!-- THANH MENU TRƯỢT BÊN CẠNH -->
   <aside class="side-drawer" id="side-drawer">
     <div class="drawer-header">
       <span class="drawer-title">📚 Sổ Tay Chủ Đề</span>
@@ -40,7 +39,7 @@
 
   <!-- KHUNG GIAO DIỆN CHÍNH Ở GIỮA -->
   <div class="app-wrapper">
-    <!-- HEADER: NÚT MỞ MENU + BANNER TÊN WEB -->
+    <!-- HEADER -->
     <header class="site-header">
       <button class="art-btn menu-toggle-btn" id="btn-open-menu" title="Mở danh sách chủ đề">
         <img src="images/btn-menu.png" alt="Menu"
@@ -57,13 +56,13 @@
       </div>
     </header>
 
-    <!-- NHÃN HIỂN THỊ CHỦ ĐỀ ĐANG HỌC -->
+    <!-- NHÃN CHỦ ĐỀ ĐANG HỌC -->
     <div class="current-topic-bar">
       <span>Chủ đề: </span>
       <strong id="active-topic-name" class="pink-highlight">Tất cả chủ đề</strong>
     </div>
 
-    <!-- 3 TAB CHÍNH: TỪ VỰNG - NGỮ PHÁP - 4 KỸ NĂNG -->
+    <!-- 3 TAB CHÍNH -->
     <nav class="nav-tabs">
       <button class="art-btn tab-btn active" data-tab="vocab">
         <img src="images/tab-vocab.png" alt="Từ vựng"
@@ -87,17 +86,16 @@
       </button>
     </nav>
 
-    <!-- KHU VỰC NỘI DUNG CHÍNH -->
+    <!-- KHU VỰC NỘI DUNG CHÍNH (3 SECTION ĐỘC LẬP) -->
     <main class="main-content">
 
-      <!-- ==================== PHẦN 1: TỪ VỰNG (FLASHCARD CỤM TỪ) ==================== -->
+      <!-- [1] BẮT ĐẦU TỪ VỰNG -->
       <section id="sec-vocab" class="tab-section active">
         <div id="vocab-flashcard-view">
           <div class="card-counter" id="card-counter">1 / 1</div>
 
           <div class="flashcard-stage">
             <div class="flashcard" id="flashcard">
-              <!-- Mặt trước thẻ (card-front.png) -->
               <div class="card-face card-front">
                 <img class="frame-art" src="images/card-front.png" alt=""
                      onload="this.parentElement.classList.add('has-frame')"
@@ -110,7 +108,6 @@
                 </div>
               </div>
 
-              <!-- Mặt sau thẻ (card-back.png) -->
               <div class="card-face card-back">
                 <img class="frame-art" src="images/card-back.png" alt=""
                      onload="this.parentElement.classList.add('has-frame')"
@@ -128,7 +125,6 @@
             </div>
           </div>
 
-          <!-- Cụm nút điều khiển thẻ -->
           <div class="card-controls">
             <button class="art-btn ctrl-btn" id="btn-prev" title="Thẻ trước">
               <img src="images/btn-prev.png" alt="Trước"
@@ -167,8 +163,9 @@
           </div>
         </div>
       </section>
+      <!-- KẾT THÚC TỪ VỰNG -->
 
-      <!-- ==================== PHẦN 2: NGỮ PHÁP ==================== -->
+      <!-- [2] BẮT ĐẦU NGỮ PHÁP -->
       <section id="sec-grammar" class="tab-section">
         <div class="sub-switch">
           <button class="sketch-pill active" data-gsub="topic">Theo chủ đề</button>
@@ -179,8 +176,9 @@
         </div>
         <div id="grammar-content"></div>
       </section>
+      <!-- KẾT THÚC NGỮ PHÁP -->
 
-      <!-- ==================== PHẦN 3: 4 KỸ NĂNG ==================== -->
+      <!-- [3] BẮT ĐẦU 4 KỸ NĂNG -->
       <section id="sec-skills" class="tab-section">
         <div class="sub-switch">
           <button class="sketch-pill active" data-skill="listening">Nghe (듣기)</button>
@@ -190,6 +188,7 @@
         </div>
         <div id="skill-content"></div>
       </section>
+      <!-- KẾT THÚC 4 KỸ NĂNG -->
 
     </main>
   </div>
@@ -198,3 +197,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
