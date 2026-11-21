@@ -3,7 +3,7 @@ let currentCard = 0;
 let activeGrammarSub = "topic";
 let activeSkill = "listening";
 
-// --- 1. QUẢN LÝ MENU TRƯỢT BÊN CẠNH & API KEY AI ---
+// --- 1. MENU TRƯỢT BÊN CẠNH & API KEY AI ---
 const sideDrawer = document.getElementById('side-drawer');
 const drawerBackdrop = document.getElementById('drawer-backdrop');
 
@@ -37,7 +37,6 @@ function renderTopicsMenu() {
   });
 }
 
-// Lưu / Xóa Gemini API Key
 const keyInput = document.getElementById('ai-key-input');
 const keyStatus = document.getElementById('ai-key-status');
 const savedKey = localStorage.getItem('llk_gemini_key') || "";
@@ -59,7 +58,7 @@ document.getElementById('btn-clear-key').addEventListener('click', () => {
   keyStatus.textContent = "Đã xóa API Key (chuyển sang chế độ chấm tự động cơ bản).";
 });
 
-// --- 2. PHÁT ÂM TIẾNG HÀN & TẠO KHUNG VẼ TAY ---
+// --- 2. PHÁT ÂM TIẾNG HÀN & KHUNG VẼ TAY ---
 function speakKorean(text, rate = 0.9) {
   if (!text) return;
   if (!('speechSynthesis' in window)) {
@@ -100,11 +99,12 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(`sec-${btn.dataset.tab}`).classList.add('active');
+    const target = document.getElementById(`sec-${btn.dataset.tab}`);
+    if (target) target.classList.add('active');
   });
 });
 
-// --- 4. PHẦN 1: TỪ VỰNG THEO CỤM (FLASHCARD) ---
+// --- 4. PHẦN 1: TỪ VỰNG THEO CỤM ---
 function getFilteredVocab() {
   if (activeTopic === "all") return vocabData;
   const filtered = vocabData.filter(v => v.topic === activeTopic);
@@ -167,7 +167,7 @@ document.getElementById('btn-speak-ex').addEventListener('click', (e) => {
   speakKorean(getFilteredVocab()[currentCard].exampleKr, 0.9);
 });
 
-// --- 5. PHẦN 2: NGỮ PHÁP (5 NHÁNH) ---
+// --- 5. PHẦN 2: NGỮ PHÁP ---
 document.querySelectorAll('[data-gsub]').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('[data-gsub]').forEach(b => b.classList.remove('active'));
@@ -191,11 +191,11 @@ function renderGrammar() {
     list.forEach(g => {
       const box = createSketchBox(`
         <div class="kr-title">${g.pattern}</div>
-        <p style="margin:6px 0;"><strong>Ý nghĩa:</strong> ${g.meaning}</p>
+        <p style="margin:6px 0;"><span class="pink-highlight">Ý nghĩa:</span> ${g.meaning}</p>
         <div class="note-box">
           <div class="note-title">★ Gợi ý cấu trúc đi kèm & Lưu ý:</div>
           <p>${g.collocations}</p>
-          <p style="margin-top:4px;"><em>${g.note}</em></p>
+          <p style="margin-top:4px;">${g.note}</p>
         </div>
         <div class="example-box">
           <p class="example-kr">${g.exampleKr}</p>
@@ -210,8 +210,8 @@ function renderGrammar() {
     grammarData.compare.forEach(c => {
       container.appendChild(createSketchBox(`
         <div class="kr-title">${c.title}</div>
-        <p style="margin:8px 0;"><strong>• Điểm 1:</strong> ${c.pointA}</p>
-        <p style="margin:8px 0;"><strong>• Điểm 2:</strong> ${c.pointB}</p>
+        <p style="margin:8px 0;"><span class="pink-highlight">• Điểm 1:</span> ${c.pointA}</p>
+        <p style="margin:8px 0;"><span class="pink-highlight">• Điểm 2:</span> ${c.pointB}</p>
         <div class="note-box">
           <div class="note-title">★ Mẹo phân biệt nhanh:</div>
           <p>${c.note}</p>
@@ -267,7 +267,7 @@ function renderGrammar() {
   }
 }
 
-// --- 6. PHẦN 3: 4 KỸ NĂNG (NGHE - NÓI - ĐỌC - VIẾT) ---
+// --- 6. PHẦN 3: 4 KỸ NĂNG ---
 document.querySelectorAll('[data-skill]').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('[data-skill]').forEach(b => b.classList.remove('active'));
@@ -277,7 +277,6 @@ document.querySelectorAll('[data-skill]').forEach(btn => {
   });
 });
 
-// Hàm gọi AI (Gemini API hoặc chấm tự động thông minh nếu chưa nhập Key)
 async function evaluateKoreanWithAI(userSentence, targetPattern, mode = "speaking") {
   const apiKey = localStorage.getItem('llk_gemini_key');
   if (!apiKey) {
@@ -297,7 +296,7 @@ async function evaluateKoreanWithAI(userSentence, targetPattern, mode = "speakin
     ? `Bạn là gia sư tiếng Hàn thân thiện. Học viên đang luyện nói với cấu trúc mục tiêu: "${targetPattern}". Câu học viên nói/viết là: "${userSentence}".
 Hãy trả lời ngắn gọn bằng JSON thuần túy (không markdown) theo mẫu:
 {"correction": "Nhận xét ngữ pháp, độ tự nhiên và câu sửa chuẩn bằng tiếng Việt", "replyKr": "1 câu phản hồi hội thoại tự nhiên bằng tiếng Hàn để tiếp tục trò chuyện", "replyVi": "Dịch nghĩa tiếng Việt của replyKr"}`
-    : `Bạn là giám khảo chấm thi viết TOPIK. Hãy chấm đoạn văn viết tiếng Hàn này (kiểm tra đuôi câu văn viết -는다/ㄴ다, từ vựng văn viết, 띄어쓰기): "${userSentence}".
+    : `Bạn là giám khảo chấm thi viết TOPIK. Hãy chấm đoạn văn viết tiếng Hàn này (kiểm tra đuôi câu văn viết -는다/ㄴ다, 띄어쓰기): "${userSentence}".
 Trả lời bằng JSON thuần túy theo mẫu:
 {"correction": "Chỉ ra lỗi cần sửa và viết lại phiên bản hoàn chỉnh chuẩn văn viết Hàn Quốc", "replyKr": "작문 실력이 점점 늘고 있어요!", "replyVi": "Kỹ năng viết của bạn đang tiến bộ dần rồi đấy!"}`;
 
@@ -324,7 +323,6 @@ function renderSkill(skillKey) {
   const container = document.getElementById('skill-content');
   container.innerHTML = "";
 
-  // 1. KỸ NĂNG NGHE (Điền từ vào chỗ trống + Trắc nghiệm A B C D)
   if (skillKey === "listening") {
     container.appendChild(createSketchBox(`<div class="note-label">Phần A: Nghe & Điền từ vào chỗ trống</div>`));
     skillsData.listening.dictation.forEach((d, idx) => {
@@ -360,7 +358,7 @@ function renderSkill(skillKey) {
     skillsData.listening.comprehension.forEach(c => {
       const qBox = createSketchBox(`
         <button class="sketch-pill small-btn btn-aud-comp" style="margin-bottom:8px;">🔊 Bấm nghe đoạn hội thoại</button>
-        <p style="font-weight:700; margin-bottom:6px;">Câu hỏi: ${c.question}</p>
+        <p style="margin-bottom:6px;"><span class="pink-highlight">Câu hỏi:</span> ${c.question}</p>
         <div class="note-box hidden script-box">
           <div class="note-title">★ Nội dung bài nghe (Script):</div>
           <p class="example-kr">${c.transcript}</p>
@@ -390,7 +388,6 @@ function renderSkill(skillKey) {
     });
   }
 
-  // 2. KỸ NĂNG NÓI (Shadowing + Thu âm + AI Chấm chữa & Hội thoại)
   else if (skillKey === "speaking") {
     container.appendChild(createSketchBox(`<div class="note-label">Phần A: Luyện nói Shadowing (Nghe & Nhại lại ngữ điệu)</div>`));
     skillsData.speaking.shadowing.forEach(s => {
@@ -431,11 +428,10 @@ function renderSkill(skillKey) {
       container.appendChild(box);
     });
 
-    // Phần B: Tự đặt câu & AI Chấm chữa / Hội thoại
     const task = skillsData.speaking.promptTask;
     const aiBox = createSketchBox(`
       <div class="note-label">Phần B: Tự đặt câu & Trợ lý AI Chấm chữa / Hội thoại</div>
-      <p><strong>Cấu trúc cho sẵn:</strong> <span class="pink-highlight">${task.pattern}</span></p>
+      <p><span class="pink-highlight">Cấu trúc cho sẵn:</span> ${task.pattern}</p>
       <p style="margin:6px 0;">${task.instruction}</p>
       <textarea class="write-area" id="speaking-user-input" placeholder="Gõ hoặc dùng mic bàn phím đọc câu tiếng Hàn của bạn..."></textarea>
       <button class="sketch-pill" id="btn-ai-check-speak" style="margin-top:8px;">✨ Gửi AI chấm chữa & đối đáp</button>
@@ -465,7 +461,6 @@ function renderSkill(skillKey) {
     });
   }
 
-  // 3. KỸ NĂNG ĐỌC (Tích Đúng O / Sai X giống Tiếng Hàn Tổng Hợp)
   else if (skillKey === "reading") {
     skillsData.reading.forEach(r => {
       const box = createSketchBox(`
@@ -509,7 +504,7 @@ function renderSkill(skillKey) {
         expArea.innerHTML = r.statements.map((st, i) => {
           const ok = userChoices[i] === st.isTrue;
           return `<div class="note-box">
-            <strong>Câu ${i + 1}: ${ok ? "✓ Đúng rồi!" : "✕ Sai rồi!"}</strong> — ${st.explain}
+            <span class="note-title">Câu ${i + 1}: ${ok ? "✓ Đúng rồi!" : "✕ Sai rồi!"}</span> — ${st.explain}
           </div>`;
         }).join("");
       });
@@ -518,17 +513,14 @@ function renderSkill(skillKey) {
     });
   }
 
-  // 4. KỸ NĂNG VIẾT (Giấy ô vuông 원고지 + Cấu trúc hô ứng + Luyện viết)
   else if (skillKey === "writing") {
     const w = skillsData.writing;
 
-    // Mục 1: Quy tắc giấy ô vuông 원고지
     container.appendChild(createSketchBox(`
       <div class="note-label">1. Quy tắc viết giấy ô vuông (원고지 쓰기)</div>
       ${w.wongojiRules.map(rule => `<p style="margin:5px 0;">${rule}</p>`).join("")}
     `));
 
-    // Mục 2: Cấu trúc hô ứng
     container.appendChild(createSketchBox(`
       <div class="note-label">2. Các cấu trúc hô ứng bắt buộc trong văn viết</div>
       ${w.correlativeStructures.map(item => `
@@ -539,7 +531,6 @@ function renderSkill(skillKey) {
       `).join("")}
     `));
 
-    // Mục 3: Thực hành viết trên khung giấy ô vuông 원고지 tương tác
     const practiceBox = createSketchBox(`
       <div class="note-label">3. Luyện viết & Xem trước trên giấy ô vuông (원고지)</div>
       <p style="margin-bottom:6px;">${w.prompt}</p>
