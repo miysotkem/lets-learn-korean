@@ -241,22 +241,25 @@ const skillsData = {
   ],
   writing: {
     wongojiRules: [
-      "1. Mở đầu mỗi đoạn văn mới: Bắt buộc lùi vào 1 ô trống ở đầu dòng.",
-      "2. Dấu chấm (.) và dấu phẩy (,): Viết vào góc dưới bên trái của 1 ô riêng. Sau dấu phẩy cách 1 ô, nhưng sau dấu chấm KHÔNG cần cách ô.",
-      "3. Chữ số và chữ Latinh (VD: 2026, TOPIK): Viết 2 ký tự vào chung 1 ô vuông.",
-      "4. Quy tắc giãn cách (띄어쓰기): Nếu khoảng cách rơi đúng vào ô đầu tiên của dòng mới thì bỏ qua, viết chữ ngay ở ô đầu dòng."
+      "1. Lùi đầu dòng: Chỉ lùi 1 ô ở ô đầu tiên của mỗi đoạn văn. Các dòng tiếp theo trong cùng đoạn bắt đầu ngay từ ô đầu tiên (không lùi).",
+      "2. Quy tắc ngắt từ và khoảng trắng (띄어쓰기):",
+      "• Mỗi ô chỉ viết 1 âm tiết (음절) hoặc 1 dấu câu.",
+      "• Nếu từ tiếp theo phải cách khoảng trắng mà rơi vào đầu dòng mới, không để ô trống ở đầu dòng mới. Hãy bắt đầu viết ngay tại ô đầu tiên của dòng đó.",
+      "3. Viết chữ số và tiếng Anh:",
+      "• Chữ số: 2 chữ số viết chung 1 ô (ví dụ: 20 viết trong 1 ô, 2026 viết trong 2 ô).",
+      "• Chữ cái tiếng Anh: 2 chữ cái viết thường/1 ô; chữ in hoa viết 1 chữ/1 ô.",
+      "4. Dấu câu:",
+      "• Dấu chấm (.), dấu phẩy (,) viết ở góc dưới bên trái của ô. Sau dấu chấm/phẩy không cần chừa trống 1 ô nếu viết tiếp ngay sau đó.",
+      "• Dấu chấm than (!), dấu hỏi (?) viết ở góc dưới bên trái của ô. Sau dấu chấm than/hỏi cần chừa trống 1 ô nếu viết tiếp ngay sau đó.",
+      "• Dấu ngoặc kép (""), dấu ('') khi bắt đầu, viết ở trên cùng bên phải và kết thúc, viết ở trên cùng bên trái. Dấu ("") dùng để trích câu, dấu ('') dùng để trích từ.",
+      "• Dấu chấm (.) và dấu (""), ('') viết trong cùng một ô."
     ],
     correlativeStructures: [
+      { pair: "N(이)란 ~는 것이다", meaning: "N có nghĩa là...", ex: "집안일이란 가정생활을 유지하기 위해 하는 일이다." },
       { pair: "비록 ~(으)ㄹ지라도 / -지만", meaning: "Dù cho... nhưng vẫn...", ex: "비록 시간이 부족할지라도 포기하지 않겠다." },
-      { pair: "왜냐하면 ~기 때문이다", meaning: "Bởi vì... là do...", ex: "독서가 중요하다. 왜냐하면 사고력을 길러 주기 때문이다." },
+      { pair: "왜냐하면 ~기 때문이다", meaning: "Bởi vì... là do...", ex: "유행을 따르는 것이 좋다고 생각한다. 왜냐하면 자신에게 잘 어울리는 스타일을 찾을 수 있기 때문이다." },
+      { pair: "이유는 ~기 때문이다", meaning: "Lý do là vì...", ex: "요리를 안 좋아하는 이유는 어렸을 때 집안일을 거의 하지 않았기 때문이다. },
       { pair: "결코 ~지 않다", meaning: "Tuyệt đối không...", ex: "노력 없는 성공은 결코 존재하지 않는다." }
-    ],
-    vocabPairs: [
-      { spoken: "나 / 저 (Tôi)", written: "필자 / 본인 (Người viết)" },
-      { spoken: "그래서 (Vì vậy)", written: "따라서 / 그러므로" },
-      { spoken: "하지만 / 그런데 (Nhưng)", written: "그러나 / 반면에" },
-      { spoken: "아주 / 너무 (Rất)", written: "매우 / 대단히" },
-      { spoken: "~해요 / ~습니다", written: "~는다 / -ㄴ다" }
     ],
     prompt: "Đề luyện viết: Hãy viết 2–3 câu tiếng Hàn (thể văn viết -는다/ㄴ다) về lý do bạn học tiếng Hàn:"
   }
