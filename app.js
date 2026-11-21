@@ -1,9 +1,7 @@
 let activeTopic = "all";
 let currentCard = 0;
-let currentQuizIndex = 0;
 let activeGrammarSub = "topic";
 let activeSkill = "listening";
-let wongojiMode = true;
 
 // --- 1. QUẢN LÝ MENU TRƯỢT BÊN CẠNH & API KEY AI ---
 const sideDrawer = document.getElementById('side-drawer');
@@ -29,7 +27,6 @@ function renderTopicsMenu() {
       activeTopic = t.id;
       document.getElementById('active-topic-name').textContent = t.name;
       currentCard = 0;
-      currentQuizIndex = 0;
       renderTopicsMenu();
       renderCard();
       renderGrammar();
@@ -107,7 +104,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-// --- 4. PHẦN 1: TỪ VỰNG THEO CỤM ---
+// --- 4. PHẦN 1: TỪ VỰNG THEO CỤM (FLASHCARD) ---
 function getFilteredVocab() {
   if (activeTopic === "all") return vocabData;
   const filtered = vocabData.filter(v => v.topic === activeTopic);
@@ -168,69 +165,6 @@ document.getElementById('btn-speak-slow').addEventListener('click', () => {
 document.getElementById('btn-speak-ex').addEventListener('click', (e) => {
   e.stopPropagation();
   speakKorean(getFilteredVocab()[currentCard].exampleKr, 0.9);
-});
-
-document.getElementById('mode-flashcard').addEventListener('click', (e) => {
-  e.target.classList.add('active');
-  document.getElementById('mode-quiz').classList.remove('active');
-  document.getElementById('vocab-flashcard-view').classList.remove('hidden');
-  document.getElementById('vocab-quiz-view').classList.add('hidden');
-});
-
-document.getElementById('mode-quiz').addEventListener('click', (e) => {
-  e.target.classList.add('active');
-  document.getElementById('mode-flashcard').classList.remove('active');
-  document.getElementById('vocab-flashcard-view').classList.add('hidden');
-  document.getElementById('vocab-quiz-view').classList.remove('hidden');
-  renderQuiz();
-});
-
-function renderQuiz() {
-  const list = getFilteredVocab();
-  if (currentQuizIndex >= list.length) currentQuizIndex = 0;
-  const item = list[currentQuizIndex];
-  const promptEl = document.getElementById('quiz-prompt');
-  const optionsEl = document.getElementById('quiz-options');
-  const feedbackEl = document.getElementById('quiz-feedback');
-  feedbackEl.textContent = "";
-
-  promptEl.innerHTML = `<div class="korean-word" style="text-align:center;">${item.korean}</div>`;
-  const listenBtn = document.createElement('button');
-  listenBtn.className = 'sketch-pill small-btn';
-  listenBtn.style.display = 'block';
-  listenBtn.style.margin = '8px auto 12px';
-  listenBtn.textContent = '🔊 Nghe lại cụm từ';
-  listenBtn.dataset.speak = item.korean;
-  promptEl.appendChild(listenBtn);
-
-  const others = vocabData
-    .filter(v => v.meaning !== item.meaning)
-    .map(v => v.meaning)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
-  const choices = [item.meaning, ...others].sort(() => Math.random() - 0.5);
-
-  optionsEl.innerHTML = "";
-  choices.forEach(choice => {
-    const btn = createSketchBox(choice, "quiz-option-btn", "button");
-    btn.addEventListener('click', () => {
-      if (choice === item.meaning) {
-        btn.classList.add('is-correct');
-        feedbackEl.textContent = "Chính xác! Chuẩn cụm từ rồi 🎉";
-        speakKorean(item.korean);
-      } else {
-        btn.classList.add('is-wrong');
-        feedbackEl.textContent = "Chưa đúng rồi, thử lại nhé!";
-      }
-    });
-    optionsEl.appendChild(btn);
-  });
-}
-
-document.getElementById('btn-next-quiz').addEventListener('click', () => {
-  const list = getFilteredVocab();
-  currentQuizIndex = (currentQuizIndex + 1) % list.length;
-  renderQuiz();
 });
 
 // --- 5. PHẦN 2: NGỮ PHÁP (5 NHÁNH) ---
@@ -347,7 +281,6 @@ document.querySelectorAll('[data-skill]').forEach(btn => {
 async function evaluateKoreanWithAI(userSentence, targetPattern, mode = "speaking") {
   const apiKey = localStorage.getItem('llk_gemini_key');
   if (!apiKey) {
-    // Chế độ chấm tự động khi chưa nhập API key
     const hasHangul = /[가-힣]/.test(userSentence);
     const hasSpacing = userSentence.trim().includes(" ");
     let feedback = hasHangul
