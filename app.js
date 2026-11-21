@@ -4,6 +4,7 @@ let currentTopikIndex = 0;
 
 // Hàm phát âm tiếng Hàn chuẩn trên điện thoại/iPad
 function speakKorean(text) {
+  if (!text) return;
   if (!('speechSynthesis' in window)) {
     alert("Trình duyệt chưa hỗ trợ đọc giọng nói.");
     return;
@@ -14,6 +15,15 @@ function speakKorean(text) {
   utter.rate = 0.9;
   window.speechSynthesis.speak(utter);
 }
+
+// Bắt sự kiện bấm nút nghe an toàn (không lỗi khi câu có dấu nháy)
+document.addEventListener('click', (e) => {
+  const speakBtn = e.target.closest('[data-speak]');
+  if (speakBtn) {
+    e.stopPropagation();
+    speakKorean(speakBtn.dataset.speak);
+  }
+});
 
 // Tạo khung hộp có tự động nhận diện tranh box-quiz.png
 function createSketchBox(innerHTML, extraClass = "", tag = "div") {
@@ -34,7 +44,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(`sec-${btn.dataset.tab}`).classList.add('active');
+    const targetSec = document.getElementById(`sec-${btn.dataset.tab}`);
+    if (targetSec) targetSec.classList.add('active');
   });
 });
 
@@ -42,6 +53,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 const flashcardEl = document.getElementById('flashcard');
 
 function renderCard() {
+  if (!vocabData || vocabData.length === 0) return;
   const item = vocabData[currentCard];
   flashcardEl.classList.remove('is-flipped');
 
@@ -102,19 +114,28 @@ document.getElementById('mode-quiz').addEventListener('click', (e) => {
 });
 
 function renderQuiz() {
+  if (!vocabData || vocabData.length === 0) return;
   const item = vocabData[currentQuizIndex];
   const promptEl = document.getElementById('quiz-prompt');
   const optionsEl = document.getElementById('quiz-options');
   const feedbackEl = document.getElementById('quiz-feedback');
   feedbackEl.textContent = "";
 
-  promptEl.innerHTML = `
-    <div class="korean-word">${item.korean}</div>
-    <button class="sketch-pill small-btn" onclick="speakKorean('${item.korean}')">🔊 Nghe lại từ này</button>
-  `;
+  promptEl.innerHTML = `<div class="korean-word">${item.korean}</div>`;
+  const listenBtn = document.createElement('button');
+  listenBtn.className = 'sketch-pill small-btn';
+  listenBtn.textContent = '🔊 Nghe lại từ này';
+  listenBtn.dataset.speak = item.korean;
+  promptEl.appendChild(listenBtn);
 
-  // Tạo danh sách đáp án xáo trộn
-  const choices = vocabData.map(v => v.meaning).sort(() => Math.random() - 0.5);
+  // Lấy đáp án đúng + tối đa 3 đáp án nhiễu ngẫu nhiên
+  const otherMeanings = vocabData
+    .filter((_, idx) => idx !== currentQuizIndex)
+    .map(v => v.meaning)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+  const choices = [item.meaning, ...otherMeanings].sort(() => Math.random() - 0.5);
+
   optionsEl.innerHTML = "";
   choices.forEach(choice => {
     const btn = createSketchBox(choice, "quiz-option-btn", "button");
@@ -148,9 +169,10 @@ function renderGrammar() {
       <div class="example-box">
         <p class="example-kr">${g.exampleKr}</p>
         <p class="example-vi">${g.exampleVi}</p>
-        <button class="sketch-pill small-btn" onclick="speakKorean('${g.exampleKr}')">🔊 Nghe ví dụ</button>
+        <button class="sketch-pill small-btn">🔊 Nghe ví dụ</button>
       </div>
     `);
+    box.querySelector('button').dataset.speak = g.exampleKr;
     container.appendChild(box);
   });
 }
@@ -164,12 +186,17 @@ function renderSkill(skillKey) {
   if (skillKey === 'listening' || skillKey === 'reading') {
     const topHTML = skillKey === 'listening'
       ? `<div class="kr-title">${data.title}</div>
-         <button class="sketch-pill small-btn" onclick="speakKorean('${data.audioText}')">🔊 Bấm để nghe đoạn hội thoại</button>`
+         <button class="sketch-pill small-btn" id="btn-listen-skill">🔊 Bấm để nghe đoạn hội thoại</button>`
       : `<div class="kr-title">${data.title}</div>
          <p class="example-kr" style="margin: 10px 0;">${data.passage}</p>
          <p><strong>Câu hỏi:</strong> ${data.question}</p>`;
 
-    container.appendChild(createSketchBox(topHTML));
+    const topBox = createSketchBox(topHTML);
+    if (skillKey === 'listening') {
+      topBox.querySelector('#btn-listen-skill').dataset.speak = data.audioText;
+    }
+    container.appendChild(topBox);
+
     const fb = document.createElement('div');
     fb.className = 'quiz-feedback';
 
@@ -190,11 +217,13 @@ function renderSkill(skillKey) {
   } else if (skillKey === 'speaking') {
     container.appendChild(createSketchBox(`<div class="kr-title">${data.title}</div>`));
     data.sentences.forEach(s => {
-      container.appendChild(createSketchBox(`
+      const box = createSketchBox(`
         <p class="example-kr">${s.kr}</p>
         <p class="example-vi">${s.vi}</p>
-        <button class="sketch-pill small-btn" onclick="speakKorean('${s.kr}')">🔊 Nghe giọng mẫu</button>
-      `));
+        <button class="sketch-pill small-btn">🔊 Nghe giọng mẫu</button>
+      `);
+      box.querySelector('button').dataset.speak = s.kr;
+      container.appendChild(box);
     });
   } else if (skillKey === 'writing') {
     container.appendChild(createSketchBox(`
@@ -266,5 +295,3 @@ renderCard();
 renderGrammar();
 renderSkill('listening');
 renderTopik();
-
- 
